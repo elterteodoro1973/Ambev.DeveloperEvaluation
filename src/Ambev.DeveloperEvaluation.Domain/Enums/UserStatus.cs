@@ -1,9 +1,9 @@
 namespace Ambev.DeveloperEvaluation.Domain.Enums;
 
-public enum eUserStatus
+public enum UserStatus
 {
-    Unknown = 0,
-    Active=1,
-    Inactive=2,
-    Suspended=3
+    Unknown,
+    Active,
+    Inactive,
+    Suspended
 }

@@ -47,13 +47,36 @@ public class AuthController : BaseController
             return BadRequest(validationResult.Errors);
 
         var command = _mapper.Map<AuthenticateUserCommand>(request);
-        var response = await _mediator.Send(command, cancellationToken);
 
-        return Ok(new ApiResponseWithData<AuthenticateUserResponse>
+        try
         {
-            Success = true,
-            Message = "User authenticated successfully",
-            Data = _mapper.Map<AuthenticateUserResponse>(response)
-        });
+            var response = await _mediator.Send(command, cancellationToken);
+
+
+            return Ok(new ApiResponseWithData<AuthenticateUserResponse>
+            {
+                Success = true,
+                Message = "User authenticated successfully",
+                Data = _mapper.Map<AuthenticateUserResponse>(response)
+            });
+        }
+        catch (Exception e)
+        {
+            string e1 = e.Message;
+            string e2 = e.InnerException ==null ? "": e.InnerException.ToString();
+            string e3 = e.Data == null ? "" : e.Data.ToString();
+            string e4 = e.Source == null ? "" : e.Source.ToString();
+            string e5 = e.StackTrace == null ? "" : e.StackTrace.ToString();
+
+            return BadRequest(new ApiResponse
+            {
+                Success = false,
+                Message = "An error occurred while authenticating the user",
+                
+            });
+        }
+
+        
+
     }
 }

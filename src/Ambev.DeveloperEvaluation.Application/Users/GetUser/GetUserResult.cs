@@ -1,3 +1,4 @@
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 
 namespace Ambev.DeveloperEvaluation.Application.Users.GetUser;
@@ -30,10 +31,10 @@ public class GetUserResult
     /// <summary>
     /// The user's role in the system
     /// </summary>
-    public UserRole Role { get; set; }
+    public string Role { get; set; }
 
     /// <summary>
     /// The current status of the user
     /// </summary>
-    public UserStatus Status { get; set; }
+    public string Status { get; set; }
 }

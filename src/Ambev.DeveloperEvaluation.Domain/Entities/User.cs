@@ -21,7 +21,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         /// Must not be null or empty and should contain both first and last names.
         /// </summary>
         [StringLength(100)]
-        public string Username { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets the user's email address.
@@ -49,26 +49,23 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         /// Gets the user's role in the system.
         /// Determines the user's permissions and access levels.
         /// </summary>
-        public UserRole Role { get; set; }
+        public string Role { get; set; }
 
-        public int? Status { get; set; }
+        public string Status { get; set; }
 
-        /// <summary>
-        /// Gets the user's current status.
-        /// Indicates whether the user is active, inactive, or blocked in the system.
-        /// </summary>
-        public UserStatus UsersStatus { get; set; }
+        
+
 
         /// <summary>
         /// Gets the date and time when the user was created.
         /// </summary>
-        [Column(TypeName = "timestamp without time zone[]")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; }
 
         /// <summary>
         /// Gets the date and time of the last update to the user's information.
         /// </summary>
-        [Column(TypeName = "timestamp without time zone[]")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime? UpdatedAt { get; set; }
 
         /// <summary>
@@ -81,7 +78,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         /// Gets the username.
         /// </summary>
         /// <returns>The username.</returns>
-        string IUser.Username => Username;
+        string IUser.Name => Name;
 
         /// <summary>
         /// Gets the user's role in the system.
@@ -94,7 +91,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         /// </summary>
         public User()
         {
-            CreatedAt = DateTime.UtcNow;
+            CreatedAt = DateTime.Now;
         }
 
         /// <summary>
@@ -130,8 +127,8 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         /// Changes the user's status to Active.
         /// </summary>
         public void Activate()
-        {
-            Status = (int?)eUserStatus.Active;
+        {            
+            Status = "Active";
             UpdatedAt = DateTime.UtcNow;
         }
 
@@ -140,8 +137,8 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         /// Changes the user's status to Inactive.
         /// </summary>
         public void Deactivate()
-        {
-            Status = (int?)eUserStatus.Inactive;
+        {            
+            Status = "Inactive";
             UpdatedAt = DateTime.UtcNow;
         }
 
@@ -151,7 +148,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         /// </summary>
         public void Suspend()
         {
-            Status = (int?)eUserStatus.Suspended;
+            Status = "Suspended";
             UpdatedAt = DateTime.UtcNow;
         }
     }

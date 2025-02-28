@@ -4,16 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Ambev.DeveloperEvaluation.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
 [Table("SaleItems", Schema = "DeveloperEvaluation")]
-public partial class SaleItems : BaseEntity
+public partial class SaleItems
 {
-    //[Key]
-    //public Guid Id { get; set; }
+    [Key]
+    public Guid Id { get; set; }
 
     public Guid? SaleId { get; set; }
 
@@ -30,5 +29,5 @@ public partial class SaleItems : BaseEntity
 
     [ForeignKey("SaleId")]
     [InverseProperty("SaleItems")]
-    public virtual Sale Sales { get; set; }
+    public virtual Sale Sale { get; set; }
 }

@@ -5,18 +5,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Ambev.DeveloperEvaluation.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
 [Table("Sale", Schema = "DeveloperEvaluation")]
-public partial class Sale : BaseEntity
+public partial class Sale
 {
-    //[Key]
-    //public Guid Id { get; set; }
+    [Key]
+    public Guid Id { get; set; }
 
-    public Guid Customer_Id { get; set; }
+    public Guid CustomerId { get; set; }
 
     public List<DateTime> SaleDate { get; set; }
 
@@ -32,7 +31,7 @@ public partial class Sale : BaseEntity
     [Column(TypeName = "bit(1)")]
     public BitArray Cancelled { get; set; }
 
-    [ForeignKey("Customer_Id")]
+    [ForeignKey("CustomerId")]
     [InverseProperty("Sale")]
     public virtual Customer Customer { get; set; }
 

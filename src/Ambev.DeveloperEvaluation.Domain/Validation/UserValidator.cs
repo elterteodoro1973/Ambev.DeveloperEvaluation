@@ -10,10 +10,10 @@ public class UserValidator : AbstractValidator<User>
     {
         RuleFor(user => user.Email).SetValidator(new EmailValidator());
 
-        RuleFor(user => user.Username)
+        RuleFor(user => user.Name)
             .NotEmpty()
-            .MinimumLength(3).WithMessage("Username must be at least 3 characters long.")
-            .MaximumLength(50).WithMessage("Username cannot be longer than 50 characters.");
+            .MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
+            .MaximumLength(50).WithMessage("Name cannot be longer than 50 characters.");
         
         RuleFor(user => user.Password).SetValidator(new PasswordValidator());
         
@@ -22,11 +22,11 @@ public class UserValidator : AbstractValidator<User>
             .WithMessage("Phone number must start with '+' followed by 11-15 digits.");
         
         RuleFor(user => user.Status)
-            .NotEqual(UserStatus.Unknown)
+            .NotEqual(UserStatus.Unknown.ToString())
             .WithMessage("User status cannot be Unknown.");
         
         RuleFor(user => user.Role)
-            .NotEqual(UserRole.None)
+            .NotEqual(EnumUserRole.None.ToString())
             .WithMessage("User role cannot be None.");
     }
 }

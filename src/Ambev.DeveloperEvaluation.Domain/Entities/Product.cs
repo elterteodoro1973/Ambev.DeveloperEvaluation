@@ -4,22 +4,31 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Ambev.DeveloperEvaluation.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
 [Table("Product", Schema = "DeveloperEvaluation")]
-public partial class Product : BaseEntity
+public partial class Product
 {
-    //[Key]
-    //public Guid Id { get; set; }
+    [Key]
+    public Guid Id { get; set; }
+
+
+    [StringLength(100)]
+    public string Title { get; set; }
 
     [StringLength(100)]
     public string Description { get; set; }
 
+    [StringLength(100)]
+    public string Category { get; set; }
+
+    [StringLength(256)]
+    public string Image { get; set; }
+
     [Precision(10, 2)]
-    public decimal? Prices { get; set; }
+    public decimal? Price { get; set; }
 
     public int? QuantityInStock { get; set; }
 

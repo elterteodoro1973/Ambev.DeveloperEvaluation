@@ -7,6 +7,6 @@ public class ActiveUserSpecification : ISpecification<User>
 {
     public bool IsSatisfiedBy(User user)
     {
-        return user.Status == UserStatus.Active;
+        return user.Status ==  UserStatus.Active.ToString();
     }
 }

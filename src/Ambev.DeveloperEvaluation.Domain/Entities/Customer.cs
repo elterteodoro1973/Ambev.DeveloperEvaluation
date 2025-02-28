@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Ambev.DeveloperEvaluation.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
@@ -13,22 +12,22 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities;
 /// Cliente
 /// </summary>
 [Table("Customer", Schema = "DeveloperEvaluation")]
-public partial class Customer : BaseEntity
+public partial class Customer
 {
-    //[Key]
-    //public Guid Id { get; set; }
+    [Key]
+    public Guid Id { get; set; }
 
     [StringLength(100)]
     public string Name { get; set; }
 
     [Required]
     [StringLength(20)]
-    public string phone { get; set; }
+    public string Phone { get; set; }
 
     [Required]
     [StringLength(256)]
-    public string email { get; set; }
+    public string Email { get; set; }
 
     [InverseProperty("Customer")]
-    public virtual ICollection<Sale> Sales { get; set; } = new List<Sale>();
+    public virtual ICollection<Sale> Sale { get; set; } = new List<Sale>();
 }

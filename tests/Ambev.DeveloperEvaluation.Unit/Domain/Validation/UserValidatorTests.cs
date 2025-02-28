@@ -56,17 +56,17 @@ public class UserValidatorTests
     [Theory(DisplayName = "Invalid username formats should fail validation")]
     [InlineData("")] // Empty
     [InlineData("ab")] // Less than 3 characters
-    public void Given_InvalidUsername_When_Validated_Then_ShouldHaveError(string username)
+    public void Given_InvalidUsername_When_Validated_Then_ShouldHaveError(string name)
     {
         // Arrange
         var user = UserTestData.GenerateValidUser();
-        user.Username = username;
+        user.Name = name;
 
         // Act
         var result = _validator.TestValidate(user);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Username);
+        result.ShouldHaveValidationErrorFor(x => x.Name);
     }
 
     /// <summary>
@@ -80,13 +80,13 @@ public class UserValidatorTests
     {
         // Arrange
         var user = UserTestData.GenerateValidUser();
-        user.Username = UserTestData.GenerateLongUsername();
+        user.Name = UserTestData.GenerateLongUsername();
 
         // Act
         var result = _validator.TestValidate(user);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Username);
+        result.ShouldHaveValidationErrorFor(x => x.Name);
     }
 
     /// <summary>
@@ -173,7 +173,7 @@ public class UserValidatorTests
     {
         // Arrange
         var user = UserTestData.GenerateValidUser();
-        user.Status = UserStatus.Unknown;
+        user.Status = UserStatus.Unknown.ToString();
 
         // Act
         var result = _validator.TestValidate(user);
@@ -195,7 +195,7 @@ public class UserValidatorTests
     {
         // Arrange
         var user = UserTestData.GenerateValidUser();
-        user.Role = UserRole.None;
+        user.Role = EnumUserRole.None.ToString();
 
         // Act
         var result = _validator.TestValidate(user);

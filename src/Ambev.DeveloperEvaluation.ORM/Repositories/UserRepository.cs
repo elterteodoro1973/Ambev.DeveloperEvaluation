@@ -52,8 +52,7 @@ public class UserRepository : IUserRepository
     /// <returns>The user if found, null otherwise</returns>
     public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        return await _context.User
-            .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+        return await _context.User.FirstOrDefaultAsync(u => u.Email == email, cancellationToken); ;
     }
 
     /// <summary>
