@@ -33,10 +33,6 @@
       {
          "Name": "DeveloperEvaluation.User",
          "ObjectType": 0
-      },
-      {
-         "Name": "DeveloperEvaluation.UserStatus",
-         "ObjectType": 0
       }
    ],
    "UiHint": null,
@@ -50,7 +46,7 @@
    "UseDecimalDataAnnotationForSprocResult": true,
    "UseFluentApiOnly": false,
    "UseHandleBars": false,
-   "UseHierarchyId": false,
+   "UseHierarchyId": true,
    "UseInflector": false,
    "UseInternalAccessModifiersForSprocsAndFunctions": false,
    "UseLegacyPluralizer": false,
@@ -59,7 +55,7 @@
    "UseNoNavigations": false,
    "UseNoObjectFilter": false,
    "UseNodaTime": false,
-   "UseNullableReferences": false,
+   "UseNullableReferences": true,
    "UsePrefixNavigationNaming": false,
    "UseSchemaFolders": false,
    "UseSchemaNamespaces": false,

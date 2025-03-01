@@ -40,18 +40,18 @@ public class AuthController : BaseController
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> AuthenticateUser([FromBody] AuthenticateUserRequest request, CancellationToken cancellationToken)
     {
-        var validator = new AuthenticateUserRequestValidator();
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-            return BadRequest(validationResult.Errors);
-
-        var command = _mapper.Map<AuthenticateUserCommand>(request);
+        var validator = new AuthenticateUserRequestValidator();       
 
         try
         {
-            var response = await _mediator.Send(command, cancellationToken);
+            var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors);
+
+            var command = _mapper.Map<AuthenticateUserCommand>(request);
+
+            var response = await _mediator.Send(command, cancellationToken);
 
             return Ok(new ApiResponseWithData<AuthenticateUserResponse>
             {
@@ -61,22 +61,12 @@ public class AuthController : BaseController
             });
         }
         catch (Exception e)
-        {
-            string e1 = e.Message;
-            string e2 = e.InnerException ==null ? "": e.InnerException.ToString();
-            string e3 = e.Data == null ? "" : e.Data.ToString();
-            string e4 = e.Source == null ? "" : e.Source.ToString();
-            string e5 = e.StackTrace == null ? "" : e.StackTrace.ToString();
-
+        {  
             return BadRequest(new ApiResponse
             {
                 Success = false,
-                Message = "An error occurred while authenticating the user",
-                
+                Message = "An error occurred while authenticating the user: "+e.Message,                
             });
         }
-
-        
-
     }
 }

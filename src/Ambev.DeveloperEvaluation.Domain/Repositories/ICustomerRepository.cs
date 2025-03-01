@@ -15,6 +15,16 @@ public interface ICustomerRepository
     /// <returns>The created user</returns>
     Task<Customer> CreateAsync(Customer customer, CancellationToken cancellationToken = default);
 
+
+    /// <summary>
+    /// Retrieves a user by their unique identifier
+    /// </summary>
+    /// <param name="name">The unique identifier of the user</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The user if found, null otherwise</returns>
+    Task<Customer?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
+
+
     /// <summary>
     /// Retrieves a user by their unique identifier
     /// </summary>

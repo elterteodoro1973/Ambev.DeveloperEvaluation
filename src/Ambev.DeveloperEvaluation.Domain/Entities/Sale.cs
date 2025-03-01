@@ -17,7 +17,7 @@ public partial class Sale
 
     public Guid CustomerId { get; set; }
 
-    public List<DateTime> SaleDate { get; set; }
+    public DateTime? SaleDate { get; set; }
 
     [Precision(12, 2)]
     public decimal? TotalGrossValue { get; set; }
@@ -28,13 +28,12 @@ public partial class Sale
     [Precision(12, 2)]
     public decimal? TotalNetValue { get; set; }
 
-    [Column(TypeName = "bit(1)")]
-    public BitArray Cancelled { get; set; }
+    public bool? cancelled { get; set; }     
 
     [ForeignKey("CustomerId")]
     [InverseProperty("Sale")]
-    public virtual Customer Customer { get; set; }
+    public virtual Customer? Customer { get; set; }
 
     [InverseProperty("Sale")]
-    public virtual ICollection<SaleItems> SaleItems { get; set; } = new List<SaleItems>();
+    public virtual ICollection<SaleItems?> SaleItems { get; set; } = new List<SaleItems>();
 }

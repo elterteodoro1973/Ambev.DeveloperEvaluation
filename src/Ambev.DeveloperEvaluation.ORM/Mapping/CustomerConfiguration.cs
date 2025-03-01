@@ -12,8 +12,8 @@ namespace Ambev.DeveloperEvaluation.ORM.Mapping
             builder.HasKey(e => e.Id).HasName("Customer_pkey");
             builder.ToTable("Customer", "DeveloperEvaluation", tb => tb.HasComment("Cliente"));
             builder.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
-            builder.Property(e => e.Name).IsFixedLength();
             builder.Property(e => e.Email).IsFixedLength();
+            builder.Property(e => e.Name).IsFixedLength();
             builder.Property(e => e.Phone).IsFixedLength();
         }
     }

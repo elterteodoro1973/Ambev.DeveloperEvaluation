@@ -9,11 +9,15 @@ using Microsoft.EntityFrameworkCore;
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
 [Table("Product", Schema = "DeveloperEvaluation")]
+[Index("Code", Name = "UQ_Product_Code", IsUnique = true)]
 public partial class Product
 {
     [Key]
     public Guid Id { get; set; }
 
+
+    [StringLength(20)]
+    public string Code { get; set; }
 
     [StringLength(100)]
     public string Title { get; set; }
