@@ -19,7 +19,7 @@ public class CreateSaleRequest
     /// <summary>
     /// The unique cancelled of the Sale
     /// </summary>
-    public bool? cancelled { get; set; } = false;
+    public bool? Cancelled { get; set; } = false;
 
     /// <summary>
     /// The unique SaleItems of the Sale

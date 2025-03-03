@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
@@ -28,12 +29,13 @@ public partial class Sale
     [Precision(12, 2)]
     public decimal? TotalNetValue { get; set; }
 
-    public bool? cancelled { get; set; }     
+    public bool? Cancelled { get; set; } = false;
 
     [ForeignKey("CustomerId")]
     [InverseProperty("Sale")]
-    public virtual Customer? Customer { get; set; }
+    public virtual Customer Customer { get; set; }
 
     [InverseProperty("Sale")]
-    public virtual ICollection<SaleItems?> SaleItems { get; set; } = new List<SaleItems>();
+    public virtual ICollection<SaleItems> SaleItems { get; set; } = new List<SaleItems>();
+
 }

@@ -9,15 +9,14 @@ namespace Ambev.DeveloperEvaluation.ORM.Mapping
         public void Configure(EntityTypeBuilder<SaleItems> builder)
         {
             builder.Property(e => e.Quantities).HasDefaultValue(1);
-
-            builder.HasOne(d => d.Product).WithMany(p => p.SaleItems)
+            builder.HasOne(d => d.CodeProductNavigation).WithMany(p => p.SaleItems)
+                .HasPrincipalKey(p => p.Code)
+                .HasForeignKey(d => d.CodeProduct)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_SaleItems_ProductId");
-
+                .HasConstraintName("FK_SaleItems_ProductCode");
             builder.HasOne(d => d.Sale).WithMany(p => p.SaleItems)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_SaleItems_SaleId");
-
         }
     }
 }

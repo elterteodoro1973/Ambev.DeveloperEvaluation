@@ -30,7 +30,7 @@ public class SaleRepository : ISaleRepository
     {
         await _context.Sale.AddAsync(Sale, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
-        return Sale;
+        return Sale;  
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public class SaleRepository : ISaleRepository
     /// <returns>The Sale if found, null otherwise</returns>
     public async Task<Sale?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Sale.FirstOrDefaultAsync(o=> o.Id == id, cancellationToken);
+        return await _context.Sale.Include(c=>c.SaleItems).Include(c => c.Customer).FirstOrDefaultAsync(o=> o.Id == id, cancellationToken);
     }
     
 
@@ -57,8 +57,24 @@ public class SaleRepository : ISaleRepository
         if (Sale == null)
             return false;
 
-        _context.Sale.Remove(Sale);
-        await _context.SaveChangesAsync(cancellationToken);
+        _context.Database.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            _context.SaleItems.RemoveRange(Sale.SaleItems);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            _context.Sale.Remove(Sale);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            await _context.Database.CommitTransactionAsync();
+        }
+        catch (Exception)
+        {
+            await _context.Database.RollbackTransactionAsync();
+            throw;
+        }
+
+        
         return true;
     }
 }

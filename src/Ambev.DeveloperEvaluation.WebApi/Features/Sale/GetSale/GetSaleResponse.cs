@@ -41,16 +41,6 @@ public class GetSaleResponse
     /// <summary>
     /// The unique cancelled of the Sale
     /// </summary>
-
-    public bool? cancelled { get; set; }
-
-    /// <summary>
-    /// The unique Customer of the Sale
-    /// </summary>
-    public Customer Customer { get; set; }
-
-    /// <summary>
-    /// The unique SaleItems of the Sale
-    /// </summary>
-    public ICollection<SaleItems> SaleItems { get; set; } = new List<SaleItems>();
+    public bool? Cancelled { get; set; } = false;
+    
 }

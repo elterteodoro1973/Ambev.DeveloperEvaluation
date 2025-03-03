@@ -15,12 +15,13 @@ public partial class Product
     [Key]
     public Guid Id { get; set; }
 
-
-    [StringLength(20)]
-    public string Code { get; set; }
-
     [StringLength(100)]
     public string Title { get; set; }
+
+    [Precision(10, 2)]
+    public decimal? Price { get; set; }
+
+    public int? QuantityInStock { get; set; }
 
     [StringLength(100)]
     public string Description { get; set; }
@@ -31,11 +32,10 @@ public partial class Product
     [StringLength(256)]
     public string Image { get; set; }
 
-    [Precision(10, 2)]
-    public decimal? Price { get; set; }
+    [Required]
+    [StringLength(10)]
+    public string Code { get; set; }
 
-    public int? QuantityInStock { get; set; }
-
-    [InverseProperty("Product")]
+    [InverseProperty("CodeProductNavigation")]
     public virtual ICollection<SaleItems> SaleItems { get; set; } = new List<SaleItems>();
 }

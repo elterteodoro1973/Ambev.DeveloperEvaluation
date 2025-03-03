@@ -32,7 +32,6 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale
             _mapper = mapper;
         }
 
-
         /// <summary>
         /// Creates a new Sale
         /// </summary>
@@ -60,9 +59,6 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale
                 Data = _mapper.Map<CreateSaleResponse>(response)
             });
         }
-
-
-
 
         /// <summary>
         /// Retrieves a Sale by their ID
@@ -93,7 +89,6 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale
                 Data = _mapper.Map<GetSaleResponse>(response)
             });
         }
-
 
         /// <summary>
         /// Deletes a Sale by their ID

@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
-
 [PrimaryKey("SaleId", "CodeProduct")]
 [Table("SaleItems", Schema = "DeveloperEvaluation")]
 public partial class SaleItems
@@ -16,19 +15,20 @@ public partial class SaleItems
     [Key]
     public Guid SaleId { get; set; }
 
-    [Key]
-    public String CodeProduct { get; set; }
-
     public int Quantities { get; set; }
 
     [Precision(10, 2)]
     public decimal UnitPrices { get; set; }
 
-    [ForeignKey("ProductId")]
+    [Key]
+    [StringLength(10)]
+    public string CodeProduct { get; set; }
+
+    [ForeignKey("CodeProduct")]
     [InverseProperty("SaleItems")]
-    public virtual Product Product { get; set; } = null!;
+    public virtual Product CodeProductNavigation { get; set; }
 
     [ForeignKey("SaleId")]
     [InverseProperty("SaleItems")]
-    public virtual Sale Sale { get; set; } = null!;
+    public virtual Sale Sale { get; set; }
 }

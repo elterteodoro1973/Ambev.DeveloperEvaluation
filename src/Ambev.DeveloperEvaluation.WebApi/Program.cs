@@ -8,6 +8,9 @@ using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Rebus.Config;
+using Rebus.Activation;
+using Rebus.Logging;
 using Serilog;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
@@ -41,6 +44,15 @@ public class Program
             builder.RegisterDependencies();
 
             builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
+
+
+            builder.Services.AddRebus(configure =>
+            {
+                var configurer = configure
+                    .Logging(l => l.ColoredConsole())
+                    .Transport(t => t.Register());
+                return configurer;
+            });
 
             builder.Services.AddMediatR(cfg =>
             {
