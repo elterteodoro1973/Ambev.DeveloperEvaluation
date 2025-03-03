@@ -46,13 +46,13 @@ public class Program
             builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
 
 
-            builder.Services.AddRebus(configure =>
-            {
-                var configurer = configure
-                    .Logging(l => l.ColoredConsole())
-                    .Transport(t => t.Register());
-                return configurer;
-            });
+            //builder.Services.AddRebus(configure =>
+            //{
+            //    var configurer = configure
+            //        .Logging(l => l.ColoredConsole())
+            //        .Transport(t => t.Register());
+            //    return configurer;
+            //});
 
             builder.Services.AddMediatR(cfg =>
             {
