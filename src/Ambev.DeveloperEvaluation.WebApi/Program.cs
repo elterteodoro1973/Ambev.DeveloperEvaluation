@@ -45,7 +45,6 @@ public class Program
 
             builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
 
-
             //builder.Services.AddRebus(configure =>
             //{
             //    var configurer = configure
