@@ -5,9 +5,11 @@ using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Customers.CreateCustomer;
 using Ambev.DeveloperEvaluation.WebApi.Features.Customers.DeleteCustomer;
 using Ambev.DeveloperEvaluation.WebApi.Features.Customers.GetCustomer;
+using Ambev.DeveloperEvaluation.WebApi.Features.Users;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Rebus.Bus;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Customers;
 
@@ -18,18 +20,21 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Customers;
 [Route("api/[controller]")]
 public class CustomersController : BaseController
 {
+    private readonly ILogger<UsersController> _logger;
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
-
+    private readonly IBus _bus;
     /// <summary>
     /// Initializes a new instance of CustomersController
     /// </summary>
     /// <param name="mediator">The mediator instance</param>
     /// <param name="mapper">The AutoMapper instance</param>
-    public CustomersController(IMediator mediator, IMapper mapper)
+    public CustomersController(ILogger<UsersController> logger, IMediator mediator, IMapper mapper, IBus bus)
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mediator = mediator;
         _mapper = mapper;
+        _bus = bus;
     }
 
     /// <summary>
@@ -55,6 +60,9 @@ public class CustomersController : BaseController
             var command = _mapper.Map<CreateCustomerCommand>(request);
             var response = await _mediator.Send(command, cancellationToken);
 
+            await _bus.Publish($"Customer: {request.Name} created with successfully ");
+            _logger.LogWarning($"Customer: {request.Name} created with successfully!");
+
             return Created(string.Empty, new ApiResponseWithData<CreateCustomerResponse>
             {
                 Success = true,
@@ -64,6 +72,7 @@ public class CustomersController : BaseController
         }
         catch (Exception e)
         {
+            _logger.LogError($"An error occurred while Customer created:: {request.Name}!");
             return BadRequest(new ApiResponse
             {
                 Success = false,
@@ -139,6 +148,9 @@ public class CustomersController : BaseController
             var command = _mapper.Map<DeleteCustomerCommand>(request.Id);
             await _mediator.Send(command, cancellationToken);
 
+            await _bus.Publish($"Customer deleted nº:{id}");
+            _logger.LogWarning($"Customer deleted nº:{id}");
+
             return Ok(new ApiResponse
             {
                 Success = true,
@@ -147,6 +159,7 @@ public class CustomersController : BaseController
         }
         catch (Exception e)
         {
+            _logger.LogError($"An error occurred while Customer deleted: {id}!");
             return BadRequest(new ApiResponse
             {
                 Success = false,

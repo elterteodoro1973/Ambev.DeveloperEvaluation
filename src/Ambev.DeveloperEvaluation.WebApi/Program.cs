@@ -5,13 +5,14 @@ using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
+using Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Rebus.Config;
 using Rebus.Activation;
-using Rebus.Logging;
+using Rebus.Config;
 using Serilog;
+using Serilog.Events;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -19,8 +20,14 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        Log.Logger = new LoggerConfiguration()
+           .MinimumLevel.Debug()
+           .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm} [{Level}] ({ThreadId}) {Message}{NewLine}{Exception}")
+           .WriteTo.File("LogStart.log", rollingInterval: RollingInterval.Day)
+           .CreateLogger();        
+
         try
-        {
+        { 
             Log.Information("Starting web application");
 
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -45,13 +52,22 @@ public class Program
 
             builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
 
-            //builder.Services.AddRebus(configure =>
-            //{
-            //    var configurer = configure
-            //        .Logging(l => l.ColoredConsole())
-            //        .Transport(t => t.Register());
-            //    return configurer;
-            //});
+            
+            builder.Services.AddRebus(configure =>
+            {
+                var configurer = configure
+                    .Logging(l => l.ColoredConsole())
+                    .Transport(t => t.UseRabbitMqAsOneWayClient(builder.Configuration.GetConnectionString("RabbitConnection")));                
+                return configurer;                
+            });
+
+            using var activator = new BuiltinHandlerActivator();
+            activator.Register(() => new UserCreatedEventHandler());
+
+            builder.Host.UseSerilog((ctx, lc) => lc
+                .WriteTo.Console(LogEventLevel.Debug)
+                .WriteTo.File("logTransaction.log",
+                    LogEventLevel.Warning,rollingInterval: RollingInterval.Day));
 
             builder.Services.AddMediatR(cfg =>
             {
@@ -65,6 +81,7 @@ public class Program
 
             var app = builder.Build();
             app.UseMiddleware<ValidationExceptionMiddleware>();
+           
 
             if (app.Environment.IsDevelopment())
             {
