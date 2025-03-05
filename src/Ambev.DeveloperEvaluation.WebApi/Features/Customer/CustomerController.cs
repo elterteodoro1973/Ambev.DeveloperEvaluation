@@ -60,7 +60,7 @@ public class CustomersController : BaseController
             var command = _mapper.Map<CreateCustomerCommand>(request);
             var response = await _mediator.Send(command, cancellationToken);
 
-            await _bus.Publish($"Customer: {request.Name} created with successfully ");
+            await _bus.Advanced.Routing.Send("Ambev",$"Customer: {request.Name} created with successfully ");
             _logger.LogWarning($"Customer: {request.Name} created with successfully!");
 
             return Created(string.Empty, new ApiResponseWithData<CreateCustomerResponse>
@@ -148,7 +148,7 @@ public class CustomersController : BaseController
             var command = _mapper.Map<DeleteCustomerCommand>(request.Id);
             await _mediator.Send(command, cancellationToken);
 
-            await _bus.Publish($"Customer deleted nº:{id}");
+            await _bus.Advanced.Routing.Send("Ambev",$"Customer deleted nº:{id}");
             _logger.LogWarning($"Customer deleted nº:{id}");
 
             return Ok(new ApiResponse

@@ -14,12 +14,6 @@ public class CreateProductRequest
     /// </summary>  
     public string Code { get; set; }
 
-
-    /// <summary>
-    /// The unique identifier of the Product
-    /// </summary>  
-    public string Title { get; set; }
-
     /// <summary>
     /// The unique identifier of the Product
     /// </summary>  

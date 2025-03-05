@@ -4,6 +4,8 @@ using AutoMapper;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Auth.AuthenticateUserFeature;
 using Ambev.DeveloperEvaluation.Application.Auth.AuthenticateUser;
+using Ambev.DeveloperEvaluation.WebApi.Features.Users;
+using Rebus.Bus;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Auth;
 
@@ -14,18 +16,22 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Auth;
 [Route("api/[controller]")]
 public class AuthController : BaseController
 {
+    private readonly ILogger<UsersController> _logger;
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly IBus _bus;
 
     /// <summary>
     /// Initializes a new instance of AuthController
     /// </summary>
     /// <param name="mediator">The mediator instance</param>
     /// <param name="mapper">The AutoMapper instance</param>
-    public AuthController(IMediator mediator, IMapper mapper)
+    public AuthController(ILogger<UsersController> logger, IMediator mediator, IMapper mapper, IBus bus)
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mediator = mediator;
         _mapper = mapper;
+        _bus = bus;
     }
 
     /// <summary>
@@ -53,6 +59,9 @@ public class AuthController : BaseController
 
             var response = await _mediator.Send(command, cancellationToken);
 
+            await _bus.Advanced.Routing.Send("Ambev",$"User {response.Name} authenticated successfully ");
+            _logger.LogWarning($"User {response.Name} authenticated successfully!");
+
             return Ok(new ApiResponseWithData<AuthenticateUserResponse>
             {
                 Success = true,
@@ -61,7 +70,8 @@ public class AuthController : BaseController
             });
         }
         catch (Exception e)
-        {  
+        {
+            _logger.LogError($"An error occurred while authenticating the user: {request.Email}!");
             return BadRequest(new ApiResponse
             {
                 Success = false,

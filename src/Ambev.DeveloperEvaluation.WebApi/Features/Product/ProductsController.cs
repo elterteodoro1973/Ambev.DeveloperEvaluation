@@ -62,7 +62,7 @@ public class ProductsController : BaseController
             var command = _mapper.Map<CreateProductCommand>(request);
             var response = await _mediator.Send(command, cancellationToken);
 
-            await _bus.Publish($"Product nº: {request.Code.ToString()} created with successfully ");
+            await _bus.Advanced.Routing.Send("Ambev",$"Product nº: {request.Code.ToString()} created with successfully ");
             _logger.LogWarning($"Product nº: {request.Code.ToString()} created with successfully!");
 
             return Created(string.Empty, new ApiResponseWithData<CreateProductResponse>
@@ -108,7 +108,7 @@ public class ProductsController : BaseController
             var command = _mapper.Map<GetProductCommand>(request.Code);
             var response = await _mediator.Send(command, cancellationToken);
 
-            await _bus.Publish($"deleted Product:{command.Code.ToString()}");
+            await _bus.Advanced.Routing.Send("Ambev", $"deleted Product:{command.Code.ToString()}");
             _logger.LogWarning($"Product:{request.Code.ToString()} deleted with successfully!");
 
             return Ok(new ApiResponseWithData<GetProductResponse>

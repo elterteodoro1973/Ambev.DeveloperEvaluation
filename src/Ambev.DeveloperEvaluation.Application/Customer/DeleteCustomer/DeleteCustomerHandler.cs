@@ -9,7 +9,7 @@ namespace Ambev.DeveloperEvaluation.Application.Customers.DeleteCustomer;
 /// </summary>
 public class DeleteCustomerHandler : IRequestHandler<DeleteCustomerCommand, DeleteCustomerResponse>
 {
-    private readonly ICustomerRepository _CustomerRepository;
+    private readonly ICustomerRepository _customerRepository;
 
     /// <summary>
     /// Initializes a new instance of DeleteCustomerHandler
@@ -17,9 +17,9 @@ public class DeleteCustomerHandler : IRequestHandler<DeleteCustomerCommand, Dele
     /// <param name="CustomerRepository">The Customer repository</param>
     /// <param name="validator">The validator for DeleteCustomerCommand</param>
     public DeleteCustomerHandler(
-        ICustomerRepository CustomerRepository)
+        ICustomerRepository customerRepository)
     {
-        _CustomerRepository = CustomerRepository;
+        _customerRepository = customerRepository;
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ public class DeleteCustomerHandler : IRequestHandler<DeleteCustomerCommand, Dele
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var success = await _CustomerRepository.DeleteAsync(request.Id, cancellationToken);
+        var success = await _customerRepository.DeleteAsync(request.Id, cancellationToken);
         if (!success)
             throw new KeyNotFoundException($"Customer with ID {request.Id} not found");
 

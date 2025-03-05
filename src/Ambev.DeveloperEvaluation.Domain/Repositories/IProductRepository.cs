@@ -8,6 +8,13 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories;
 public interface IProductRepository
 {
     /// <summary>
+    /// Initializes a new instance of UserRepository
+    /// </summary>
+    /// <param name="context">The database context</param>
+    Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken = default);
+
+
+    /// <summary>
     /// Creates a new user in the repository
     /// </summary>
     /// <param name="user">The user to create</param>

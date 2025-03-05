@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Ambev.DeveloperEvaluation.Common.Validation;
+using Ambev.DeveloperEvaluation.Domain.Validation;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
@@ -15,13 +17,9 @@ public partial class Product
     [Key]
     public Guid Id { get; set; }
 
-    [StringLength(100)]
-    public string Title { get; set; }
-
-    [Precision(10, 2)]
-    public decimal? Price { get; set; }
-
-    public int? QuantityInStock { get; set; }
+    [Required]
+    [StringLength(10)]
+    public string Code { get; set; }
 
     [StringLength(100)]
     public string Description { get; set; }
@@ -32,10 +30,23 @@ public partial class Product
     [StringLength(256)]
     public string Image { get; set; }
 
-    [Required]
-    [StringLength(10)]
-    public string Code { get; set; }
+    [Precision(10, 2)]
+    public decimal? Price { get; set; }
+
+    public int? QuantityInStock { get; set; }    
+   
 
     [InverseProperty("CodeProductNavigation")]
     public virtual ICollection<SaleItems> SaleItems { get; set; } = new List<SaleItems>();
+
+    public ValidationResultDetail Validate()
+    {
+        var validator = new ProductValidator();
+        var result = validator.Validate(this);
+        return new ValidationResultDetail
+        {
+            IsValid = result.IsValid,
+            Errors = result.Errors.Select(o => (ValidationErrorDetail)o)
+        };
+    }
 }

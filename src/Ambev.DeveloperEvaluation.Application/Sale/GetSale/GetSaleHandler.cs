@@ -10,7 +10,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 /// </summary>
 public class GetSaleHandler : IRequestHandler<GetSaleCommand, GetSaleResult>
 {
-    private readonly ISaleRepository _SaleRepository;
+    private readonly ISaleRepository _saleRepository;
     private readonly IMapper _mapper;
 
     /// <summary>
@@ -23,7 +23,7 @@ public class GetSaleHandler : IRequestHandler<GetSaleCommand, GetSaleResult>
         ISaleRepository SaleRepository,
         IMapper mapper)
     {
-        _SaleRepository = SaleRepository;
+        _saleRepository = SaleRepository;
         _mapper = mapper;
     }
 
@@ -41,7 +41,7 @@ public class GetSaleHandler : IRequestHandler<GetSaleCommand, GetSaleResult>
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var Sale = await _SaleRepository.GetByIdAsync(request.Id, cancellationToken);
+        var Sale = await _saleRepository.GetByIdAsync(request.Id, cancellationToken);
         if (Sale == null)
             throw new KeyNotFoundException($"Sale with ID {request.Id} not found");
 

@@ -25,11 +25,6 @@ public class GetProductResponse
     /// <summary>
     /// The unique identifier of the Product
     /// </summary>  
-    public string Title { get; set; }
-
-    /// <summary>
-    /// The unique identifier of the Product
-    /// </summary>  
     public string Description { get; set; }
 
     /// <summary>

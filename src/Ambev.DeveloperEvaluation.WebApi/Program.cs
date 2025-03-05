@@ -11,6 +11,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Rebus.Activation;
 using Rebus.Config;
+using Rebus.Routing.TypeBased;
 using Serilog;
 using Serilog.Events;
 
@@ -34,9 +35,11 @@ public class Program
             builder.AddDefaultLogging();
 
             builder.Services.AddControllers();
+
             builder.Services.AddEndpointsApiExplorer();
 
             builder.AddBasicHealthChecks();
+            
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<DefaultContext>(options =>
@@ -52,13 +55,15 @@ public class Program
 
             builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
 
-            
             builder.Services.AddRebus(configure =>
             {
-                var configurer = configure
+                var configurer = configure                    
+  
+                    .Routing(r => r.TypeBased().Map<string>("Ambev"))
                     .Logging(l => l.ColoredConsole())
-                    .Transport(t => t.UseRabbitMqAsOneWayClient(builder.Configuration.GetConnectionString("RabbitConnection")));                
-                return configurer;                
+                    .Transport(t => t.UseRabbitMq(builder.Configuration.GetConnectionString("RabbitConnection"), "Ambev"));
+
+                return configurer;
             });
 
             using var activator = new BuiltinHandlerActivator();
@@ -82,7 +87,6 @@ public class Program
             var app = builder.Build();
             app.UseMiddleware<ValidationExceptionMiddleware>();
            
-
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

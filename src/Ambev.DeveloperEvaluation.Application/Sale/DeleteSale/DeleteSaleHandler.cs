@@ -9,7 +9,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 /// </summary>
 public class DeleteSaleHandler : IRequestHandler<DeleteSaleCommand, DeleteSaleResponse>
 {
-    private readonly ISaleRepository _SaleRepository;
+    private readonly ISaleRepository _saleRepository;
 
     /// <summary>
     /// Initializes a new instance of DeleteSaleHandler
@@ -19,7 +19,7 @@ public class DeleteSaleHandler : IRequestHandler<DeleteSaleCommand, DeleteSaleRe
     public DeleteSaleHandler(
         ISaleRepository SaleRepository)
     {
-        _SaleRepository = SaleRepository;
+        _saleRepository = SaleRepository;
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ public class DeleteSaleHandler : IRequestHandler<DeleteSaleCommand, DeleteSaleRe
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var success = await _SaleRepository.DeleteAsync(request.Id, cancellationToken);
+        var success = await _saleRepository.DeleteAsync(request.Id, cancellationToken);
         if (!success)
             throw new KeyNotFoundException($"Sale with ID {request.Id} not found");
 

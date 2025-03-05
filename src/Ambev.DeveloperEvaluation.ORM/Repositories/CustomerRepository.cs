@@ -38,25 +38,37 @@ public class CustomerRepository : ICustomerRepository
     /// <summary>
     /// Retrieves a Customer by their unique identifier
     /// </summary>
-    /// <param name="name">The unique identifier of the Customer</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The Customer if found, null otherwise</returns>
-    public async Task<Customer?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
-    {
-       return await _context.Customer.FirstOrDefaultAsync(o => o.Name.ToLower().Contains(name), cancellationToken);
-    }
-
-
-    /// <summary>
-    /// Retrieves a Customer by their unique identifier
-    /// </summary>
     /// <param name="id">The unique identifier of the Customer</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The Customer if found, null otherwise</returns>
     public async Task<Customer?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Customer.FirstOrDefaultAsync(o => o.Id== id, cancellationToken);
+        return await _context.Customer.FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
+    }   
+
+
+    /// <summary>
+    /// Retrieves a Customer by their unique identifier
+    /// </summary>
+    /// <param name="name">The unique identifier of the Customer</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The Customer if found, null otherwise</returns>
+    public async Task<Customer?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+    {
+        return await _context.Customer.FirstOrDefaultAsync(o => o.Name.ToLower()== name.ToLower(), cancellationToken);
     }
+
+    /// <summary>
+    /// Retrieves a Customer by their unique identifier
+    /// </summary>
+    /// <param name="name">The unique identifier of the Customer</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The Customer if found, null otherwise</returns>
+    public async Task<Customer?> GetByPartialNameAsync(string name, CancellationToken cancellationToken = default)
+    {
+        return await _context.Customer.FirstOrDefaultAsync(o => o.Name.ToLower().Contains(name), cancellationToken);
+    }
+
 
     /// <summary>
     /// Retrieves a Customer by their email address
@@ -85,4 +97,15 @@ public class CustomerRepository : ICustomerRepository
         await _context.SaveChangesAsync(cancellationToken);
         return true;
     }
+
+    /// <summary>
+    /// Retrieves all Customers from the database
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>A list of all Customers</returns>
+    public async Task<IEnumerable<Customer>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Customer.ToListAsync(cancellationToken);
+    }
+    
 }

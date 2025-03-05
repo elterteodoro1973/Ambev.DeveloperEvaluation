@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Ambev.DeveloperEvaluation.Common.Validation;
+using Ambev.DeveloperEvaluation.Domain.Validation;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
@@ -30,4 +32,15 @@ public partial class Customer
 
     [InverseProperty("Customer")]
     public virtual ICollection<Sale> Sale { get; set; } = new List<Sale>();
+
+    public ValidationResultDetail Validate()
+    {
+        var validator = new CustomerValidator();
+        var result = validator.Validate(this);
+        return new ValidationResultDetail
+        {
+            IsValid = result.IsValid,
+            Errors = result.Errors.Select(o => (ValidationErrorDetail)o)
+        };
+    }
 }

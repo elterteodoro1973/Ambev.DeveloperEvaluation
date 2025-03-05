@@ -12,9 +12,8 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 /// </summary>
 public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleResult>
 {
-    private readonly ISaleRepository _SaleRepository;
-    private readonly IMapper _mapper;
-    private readonly IPasswordHasher _passwordHasher;
+    private readonly ISaleRepository _saleRepository;
+    private readonly IMapper _mapper;    
 
     /// <summary>
     /// Initializes a new instance of CreateSaleHandler
@@ -22,11 +21,10 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
     /// <param name="SaleRepository">The Sale repository</param>
     /// <param name="mapper">The AutoMapper instance</param>
     /// <param name="validator">The validator for CreateSaleCommand</param>
-    public CreateSaleHandler(ISaleRepository SaleRepository, IMapper mapper, IPasswordHasher passwordHasher)
+    public CreateSaleHandler(ISaleRepository saleRepository, IMapper mapper)
     {
-        _SaleRepository = SaleRepository;
+        _saleRepository = saleRepository;
         _mapper = mapper;
-        _passwordHasher = passwordHasher;
     }
 
     /// <summary>
@@ -89,7 +87,7 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
         sale.Discounts = discounts;
         sale.Cancelled = false;
 
-        var createdSale = await _SaleRepository.CreateAsync(sale, cancellationToken);
+        var createdSale = await _saleRepository.CreateAsync(sale, cancellationToken);
         var result = _mapper.Map<CreateSaleResult>(createdSale);
         return result;
     }

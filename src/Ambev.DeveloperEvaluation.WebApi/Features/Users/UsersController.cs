@@ -64,8 +64,8 @@ public class UsersController : BaseController
 
             var command = _mapper.Map<CreateUserCommand>(request);
             var response = await _mediator.Send(command, cancellationToken);
-            
-            await _bus.Publish(new UserCreatedEvent(request.Email, "User created successfully"));
+                               
+            await _bus.Advanced.Routing.Send("Ambev","User created successfully");
             _logger.LogWarning($"Created user:{request.Name}, with successfully!");
 
             return Created(string.Empty, new ApiResponseWithData<CreateUserResponse>
@@ -141,7 +141,7 @@ public class UsersController : BaseController
             var command = _mapper.Map<DeleteUserCommand>(request.Id);
             await _mediator.Send(command, cancellationToken);
             
-            await _bus.Publish("Delete user");
+            await _bus.Advanced.Routing.Send("Ambev","Delete user");
             _logger.LogWarning("User deleted with successfully!");
 
             return Ok(new ApiResponse

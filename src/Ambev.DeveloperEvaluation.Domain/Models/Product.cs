@@ -16,15 +16,12 @@ public partial class Product
     public Guid Id { get; set; }
 
     [StringLength(100)]
-    public string Title { get; set; }
+    public string Description { get; set; }
 
     [Precision(10, 2)]
     public decimal? Price { get; set; }
 
-    public int? QuantityInStock { get; set; }
-
-    [StringLength(100)]
-    public string Description { get; set; }
+    public int? QuantityInStock { get; set; }    
 
     [StringLength(100)]
     public string Category { get; set; }

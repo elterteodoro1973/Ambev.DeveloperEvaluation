@@ -63,7 +63,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale
                 var command = _mapper.Map<CreateSaleCommand>(request);
                 var response = await _mediator.Send(command, cancellationToken);
 
-                await _bus.Publish($"Sale nº: {response.Id.ToString()} created with successfully ");
+                await _bus.Advanced.Routing.Send("Ambev", $"Sale nº: {response.Id.ToString()} created with successfully ");
                 _logger.LogWarning($"Sale nº: {response.Id.ToString()} created with successfully!");
 
                 return Created(string.Empty, new ApiResponseWithData<CreateSaleResponse>
@@ -139,7 +139,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale
                 var command = _mapper.Map<DeleteSaleCommand>(request.Id);
                 await _mediator.Send(command, cancellationToken);
 
-                await _bus.Publish($"deleted sale:{request.Id.ToString()}");
+                await _bus.Advanced.Routing.Send("Ambev",$"deleted sale:{request.Id.ToString()}");
                 _logger.LogWarning($"Sale:{request.Id.ToString()} deleted with successfully!");
 
                 return Ok(new ApiResponse
