@@ -12,9 +12,8 @@ namespace Ambev.DeveloperEvaluation.Application.Customers.CreateCustomer;
 /// </summary>
 public class CreateCustomerHandler : IRequestHandler<CreateCustomerCommand, CreateCustomerResult>
 {
-    private readonly ICustomerRepository _CustomerRepository;
-    private readonly IMapper _mapper;
-    private readonly IPasswordHasher _passwordHasher;
+    private readonly ICustomerRepository _customerRepository;
+    private readonly IMapper _mapper;    
 
     /// <summary>
     /// Initializes a new instance of CreateCustomerHandler
@@ -22,11 +21,10 @@ public class CreateCustomerHandler : IRequestHandler<CreateCustomerCommand, Crea
     /// <param name="CustomerRepository">The Customer repository</param>
     /// <param name="mapper">The AutoMapper instance</param>
     /// <param name="validator">The validator for CreateCustomerCommand</param>
-    public CreateCustomerHandler(ICustomerRepository CustomerRepository, IMapper mapper, IPasswordHasher passwordHasher)
+    public CreateCustomerHandler(ICustomerRepository customerRepository, IMapper mapper)
     {
-        _CustomerRepository = CustomerRepository;
+        _customerRepository = customerRepository;
         _mapper = mapper;
-        _passwordHasher = passwordHasher;
     }
 
     /// <summary>
@@ -43,14 +41,18 @@ public class CreateCustomerHandler : IRequestHandler<CreateCustomerCommand, Crea
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var existingCustomer = await _CustomerRepository.GetByEmailAsync(command.Email, cancellationToken);
-        if (existingCustomer != null)
+        var existingEmailCustomer = await _customerRepository.GetByEmailAsync(command.Email, cancellationToken);
+        if (existingEmailCustomer != null)
             throw new InvalidOperationException($"Customer with email {command.Email} already exists");
 
-        var customer = _mapper.Map<Customer>(command);
-        
+        var existingNameCustomer = await _customerRepository.GetByEmailAsync(command.Email, cancellationToken);
+        if (existingNameCustomer != null)
+            throw new InvalidOperationException($"Customer with name {command.Email} already exists");
 
-        var createdCustomer = await _CustomerRepository.CreateAsync(customer, cancellationToken);
+
+        var customer = _mapper.Map<Customer>(command);        
+
+        var createdCustomer = await _customerRepository.CreateAsync(customer, cancellationToken);
         var result = _mapper.Map<CreateCustomerResult>(createdCustomer);
         return result;
     }

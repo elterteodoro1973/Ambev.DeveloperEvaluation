@@ -10,7 +10,7 @@ namespace Ambev.DeveloperEvaluation.Application.Customers.GetCustomer;
 /// </summary>
 public class GetCustomerHandler : IRequestHandler<GetCustomerCommand, GetCustomerResult>
 {
-    private readonly ICustomerRepository _CustomerRepository;
+    private readonly ICustomerRepository _customerRepository;
     private readonly IMapper _mapper;
 
     /// <summary>
@@ -20,10 +20,10 @@ public class GetCustomerHandler : IRequestHandler<GetCustomerCommand, GetCustome
     /// <param name="mapper">The AutoMapper instance</param>
     /// <param name="validator">The validator for GetCustomerCommand</param>
     public GetCustomerHandler(
-        ICustomerRepository CustomerRepository,
+        ICustomerRepository customerRepository,
         IMapper mapper)
     {
-        _CustomerRepository = CustomerRepository;
+        _customerRepository = customerRepository;
         _mapper = mapper;
     }
 
@@ -41,7 +41,7 @@ public class GetCustomerHandler : IRequestHandler<GetCustomerCommand, GetCustome
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var Customer = await _CustomerRepository.GetByNameAsync(request.Name, cancellationToken);
+        var Customer = await _customerRepository.GetByNameAsync(request.Name, cancellationToken);
         if (Customer == null)
             throw new KeyNotFoundException($"Customer with ID {request.Name} not found");
 

@@ -21,6 +21,16 @@ public class ProductRepository : IProductRepository
     }
 
     /// <summary>
+    /// Retrieves all Customers from the database
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>A list of all Customers</returns>
+    public async Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Product.ToListAsync(cancellationToken);
+    }
+
+    /// <summary>
     /// Creates a new user in the database
     /// </summary>
     /// <param name="user">The user to create</param>
@@ -63,7 +73,7 @@ public class ProductRepository : IProductRepository
     /// <returns>The user if found, null otherwise</returns>
     public async Task<Product?> GetByDescriptionAsync(string description, CancellationToken cancellationToken = default)
     {
-        return await _context.Product.FirstOrDefaultAsync(o => o.Description.ToLower().Contains(description) || o.Title.ToLower().Contains(description), cancellationToken);
+        return await _context.Product.FirstOrDefaultAsync(o => o.Description.ToLower().Contains(description) , cancellationToken);
     }
 
     /// <summary>

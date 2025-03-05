@@ -1,6 +1,3 @@
-using Ambev.DeveloperEvaluation.Domain.Entities;
-using Ambev.DeveloperEvaluation.Domain.Enums;
-
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 
 /// <summary>
@@ -42,15 +39,6 @@ public class CreateSaleResponse
     /// The unique cancelled of the Sale
     /// </summary>
 
-    public bool? cancelled { get; set; }
+    public bool? Cancelled { get; set; } = false;
 
-    /// <summary>
-    /// The unique Customer of the Sale
-    /// </summary>
-    public Customer Customer { get; set; }
-
-    /// <summary>
-    /// The unique SaleItems of the Sale
-    /// </summary>
-    public ICollection<SaleItems> SaleItems { get; set; } = new List<SaleItems>();
 }

@@ -1,5 +1,4 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
-using Ambev.DeveloperEvaluation.Domain.Enums;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 
@@ -42,7 +41,7 @@ public class GetSaleResult
     /// The unique cancelled of the Sale
     /// </summary>
 
-    public bool? cancelled { get; set; }
+    public bool? Cancelled { get; set; } = false;
 
     /// <summary>
     /// The unique Customer of the Sale

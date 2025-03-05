@@ -10,7 +10,7 @@ namespace Ambev.DeveloperEvaluation.Application.Products.GetProduct;
 /// </summary>
 public class GetProductHandler : IRequestHandler<GetProductCommand, GetProductResult>
 {
-    private readonly IProductRepository _ProductRepository;
+    private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
 
     /// <summary>
@@ -20,10 +20,10 @@ public class GetProductHandler : IRequestHandler<GetProductCommand, GetProductRe
     /// <param name="mapper">The AutoMapper instance</param>
     /// <param name="validator">The validator for GetProductCommand</param>
     public GetProductHandler(
-        IProductRepository ProductRepository,
+        IProductRepository productRepository,
         IMapper mapper)
     {
-        _ProductRepository = ProductRepository;
+        _productRepository = productRepository;
         _mapper = mapper;
     }
 
@@ -41,7 +41,7 @@ public class GetProductHandler : IRequestHandler<GetProductCommand, GetProductRe
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var Product = await _ProductRepository.GetByCodeAsync(request.Code, cancellationToken);
+        var Product = await _productRepository.GetByCodeAsync(request.Code, cancellationToken);
         if (Product == null)
             throw new KeyNotFoundException($"Product with ID {request.Code} not found");
 

@@ -7,6 +7,8 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories;
 /// </summary>
 public interface ICustomerRepository
 {
+    Task<IEnumerable<Customer>> GetAllAsync(CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Creates a new user in the repository
     /// </summary>
@@ -15,6 +17,14 @@ public interface ICustomerRepository
     /// <returns>The created user</returns>
     Task<Customer> CreateAsync(Customer customer, CancellationToken cancellationToken = default);
 
+
+    /// <summary>
+    /// Retrieves a user by their unique identifier
+    /// </summary>
+    /// <param name="id">The unique identifier of the user</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The user if found, null otherwise</returns>
+    Task<Customer?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves a user by their unique identifier
@@ -28,10 +38,11 @@ public interface ICustomerRepository
     /// <summary>
     /// Retrieves a user by their unique identifier
     /// </summary>
-    /// <param name="id">The unique identifier of the user</param>
+    /// <param name="name">The unique identifier of the user</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The user if found, null otherwise</returns>
-    Task<Customer?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Customer?> GetByPartialNameAsync(string name, CancellationToken cancellationToken = default);
+
 
     /// <summary>
     /// Retrieves a user by their email address
@@ -40,6 +51,7 @@ public interface ICustomerRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The user if found, null otherwise</returns>
     Task<Customer?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
+
 
     /// <summary>
     /// Deletes a user from the repository

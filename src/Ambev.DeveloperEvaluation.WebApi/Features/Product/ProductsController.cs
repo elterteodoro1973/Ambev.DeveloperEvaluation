@@ -5,9 +5,12 @@ using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.CreateProduct;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.DeleteProduct;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.GetProduct;
+using Ambev.DeveloperEvaluation.WebApi.Features.Users;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Rebus.Bus;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Products;
 
@@ -18,18 +21,22 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products;
 [Route("api/[controller]")]
 public class ProductsController : BaseController
 {
+    private readonly ILogger<UsersController> _logger;
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly IBus _bus;
 
     /// <summary>
     /// Initializes a new instance of ProductsController
     /// </summary>
     /// <param name="mediator">The mediator instance</param>
     /// <param name="mapper">The AutoMapper instance</param>
-    public ProductsController(IMediator mediator, IMapper mapper)
+    public ProductsController(ILogger<UsersController> logger, IMediator mediator, IMapper mapper, IBus bus)
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mediator = mediator;
         _mapper = mapper;
+        _bus = bus;
     }
 
     /// <summary>
@@ -55,6 +62,9 @@ public class ProductsController : BaseController
             var command = _mapper.Map<CreateProductCommand>(request);
             var response = await _mediator.Send(command, cancellationToken);
 
+            await _bus.Advanced.Routing.Send("Ambev",$"Product nº: {request.Code.ToString()} created with successfully ");
+            _logger.LogWarning($"Product nº: {request.Code.ToString()} created with successfully!");
+
             return Created(string.Empty, new ApiResponseWithData<CreateProductResponse>
             {
                 Success = true,
@@ -64,10 +74,11 @@ public class ProductsController : BaseController
         }
         catch (Exception e)
         {
+            _logger.LogError($"An error occurred while created Product: {request.Code.ToString()}!");
             return BadRequest(new ApiResponse
             {
                 Success = false,
-                Message = "An error occurred while Product created: " + e.Message,
+                Message = "An error occurred while created Product: " + e.Message,
             });
         }
     }
@@ -97,6 +108,9 @@ public class ProductsController : BaseController
             var command = _mapper.Map<GetProductCommand>(request.Code);
             var response = await _mediator.Send(command, cancellationToken);
 
+            await _bus.Advanced.Routing.Send("Ambev", $"deleted Product:{command.Code.ToString()}");
+            _logger.LogWarning($"Product:{request.Code.ToString()} deleted with successfully!");
+
             return Ok(new ApiResponseWithData<GetProductResponse>
             {
                 Success = true,
@@ -106,6 +120,7 @@ public class ProductsController : BaseController
         }
         catch (Exception e)
         {
+            _logger.LogError($"An error occurred while created Product: {code.ToString()}!");
             return BadRequest(new ApiResponse
             {
                 Success = false,
@@ -147,6 +162,7 @@ public class ProductsController : BaseController
         }
         catch (Exception e)
         {
+            _logger.LogWarning($"An error occurred while Product deleted::{request.Code.ToString()} !");
             return BadRequest(new ApiResponse
             {
                 Success = false,

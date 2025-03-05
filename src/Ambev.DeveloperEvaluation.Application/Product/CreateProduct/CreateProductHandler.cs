@@ -12,9 +12,8 @@ namespace Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 /// </summary>
 public class CreateProductHandler : IRequestHandler<CreateProductCommand, CreateProductResult>
 {
-    private readonly IProductRepository _ProductRepository;
-    private readonly IMapper _mapper;
-    private readonly IPasswordHasher _passwordHasher;
+    private readonly IProductRepository _productRepository;
+    private readonly IMapper _mapper;    
 
     /// <summary>
     /// Initializes a new instance of CreateProductHandler
@@ -22,11 +21,10 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Create
     /// <param name="ProductRepository">The Product repository</param>
     /// <param name="mapper">The AutoMapper instance</param>
     /// <param name="validator">The validator for CreateProductCommand</param>
-    public CreateProductHandler(IProductRepository ProductRepository, IMapper mapper, IPasswordHasher passwordHasher)
+    public CreateProductHandler(IProductRepository productRepository, IMapper mapper)
     {
-        _ProductRepository = ProductRepository;
+        _productRepository = productRepository;
         _mapper = mapper;
-        _passwordHasher = passwordHasher;
     }
 
     /// <summary>
@@ -46,7 +44,7 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Create
 
         var product = _mapper.Map<Product>(command);
 
-        var createdProduct = await _ProductRepository.CreateAsync(product, cancellationToken);
+        var createdProduct = await _productRepository.CreateAsync(product, cancellationToken);
         var result = _mapper.Map<CreateProductResult>(createdProduct);
         return result;
     }

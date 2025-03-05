@@ -1,6 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
 using Ambev.DeveloperEvaluation.Application.Users.DeleteUser;
 using Ambev.DeveloperEvaluation.Application.Users.GetUser;
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.DeleteUser;
@@ -8,6 +9,10 @@ using Ambev.DeveloperEvaluation.WebApi.Features.Users.GetUser;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Rebus.Bus;
+using Serilog;
+
+
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Users;
 
@@ -18,18 +23,24 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Users;
 [Route("api/[controller]")]
 public class UsersController : BaseController
 {
+
+    private readonly ILogger<UsersController> _logger;
+    
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly IBus _bus;
 
     /// <summary>
     /// Initializes a new instance of UsersController
     /// </summary>
     /// <param name="mediator">The mediator instance</param>
     /// <param name="mapper">The AutoMapper instance</param>
-    public UsersController(IMediator mediator, IMapper mapper)
+    public UsersController(ILogger<UsersController> logger, IMediator mediator, IMapper mapper, IBus bus)
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mediator = mediator;
         _mapper = mapper;
+        _bus = bus;  
     }
 
     /// <summary>
@@ -43,21 +54,36 @@ public class UsersController : BaseController
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request, CancellationToken cancellationToken)
     {
-        var validator = new CreateUserRequestValidator();
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-            return BadRequest(validationResult.Errors);
-
-        var command = _mapper.Map<CreateUserCommand>(request);
-        var response = await _mediator.Send(command, cancellationToken);
-
-        return Created(string.Empty, new ApiResponseWithData<CreateUserResponse>
+        try
         {
-            Success = true,
-            Message = "User created successfully",
-            Data = _mapper.Map<CreateUserResponse>(response)
-        });
+            var validator = new CreateUserRequestValidator();
+            var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors);
+
+            var command = _mapper.Map<CreateUserCommand>(request);
+            var response = await _mediator.Send(command, cancellationToken);
+                               
+            await _bus.Advanced.Routing.Send("Ambev","User created successfully");
+            _logger.LogWarning($"Created user:{request.Name}, with successfully!");
+
+            return Created(string.Empty, new ApiResponseWithData<CreateUserResponse>
+            {
+                Success = true,
+                Message = "User created successfully",
+                Data = _mapper.Map<CreateUserResponse>(response)
+            });
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"An error occurred while created the user:{request.Name},error:{e.Message}!");
+            return BadRequest(new ApiResponse
+            {
+                Success = false,
+                Message = "An error occurred while created the user: " + e.Message,
+            });
+        }
     }
 
     /// <summary>
@@ -104,18 +130,34 @@ public class UsersController : BaseController
     {
         var request = new DeleteUserRequest { Id = id };
         var validator = new DeleteUserRequestValidator();
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-            return BadRequest(validationResult.Errors);
-
-        var command = _mapper.Map<DeleteUserCommand>(request.Id);
-        await _mediator.Send(command, cancellationToken);
-
-        return Ok(new ApiResponse
+        
+        try
         {
-            Success = true,
-            Message = "User deleted successfully"
-        });
+            var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors);
+
+            var command = _mapper.Map<DeleteUserCommand>(request.Id);
+            await _mediator.Send(command, cancellationToken);
+            
+            await _bus.Advanced.Routing.Send("Ambev","Delete user");
+            _logger.LogWarning("User deleted with successfully!");
+
+            return Ok(new ApiResponse
+            {
+                Success = true,
+                Message = "User deleted with  successfully"
+            });
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("An error occurred while delete the user!");
+            return BadRequest(new ApiResponse
+            {
+                Success = false,
+                Message = "An error occurred while delete the user: " + e.Message,
+            });
+        }
     }
 }

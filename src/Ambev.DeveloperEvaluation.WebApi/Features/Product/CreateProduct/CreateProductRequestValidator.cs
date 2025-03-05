@@ -23,7 +23,6 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
     /// </remarks>
     public CreateProductRequestValidator()
     {        
-        RuleFor(Product => Product.Description).NotEmpty().Length(3, 50);
-        RuleFor(Product => Product.Title).NotEmpty().Length(3, 50); 
+        RuleFor(Product => Product.Description).NotEmpty().Length(3, 50);        
     }
 }
