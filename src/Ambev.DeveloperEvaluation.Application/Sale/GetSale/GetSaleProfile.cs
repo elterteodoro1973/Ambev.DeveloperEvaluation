@@ -13,7 +13,17 @@ public class GetSaleProfile : Profile
     /// </summary>
     public GetSaleProfile()
     {
-        CreateMap<Sale, GetSaleResult>();
-        CreateMap<GetSaleResult, Sale>();
+        //CreateMap<Sale, GetSaleResult>();
+        //CreateMap<GetSaleResult, Sale>();
+
+        CreateMap<Sale, GetSaleResult>()
+         .ForMember(c => c.SaleItems, m => m.MapFrom(c => c.SaleItems.Select(x => new GetSaleItemsResult
+         {
+             SaleId = x.SaleId,
+             CodeProduct = x.CodeProduct,
+             NameProduct = x.CodeProductNavigation.Description,
+             Quantities = x.Quantities,
+             UnitPrices = x.UnitPrices,
+         }).ToList()));
     }
 }

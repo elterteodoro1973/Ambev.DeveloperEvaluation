@@ -15,10 +15,14 @@ public class ListSaleProfile : Profile
     /// Initializes the mappings for GetUser operation
     /// </summary>
     public ListSaleProfile()
-    {
-        CreateMap<Sale, ListSaleItemsResponse>();
-        CreateMap<SaleItems, Sale>();
-        CreateMap<Sale, ListSaleResponse>();
-        CreateMap<ListSaleResponse, Sale>();
+    {        
+        CreateMap<Sale, ListSaleResponse>()         
+         .ForMember(c => c.SaleItems, m => m.MapFrom(c => c.SaleItems.Select(x => new ListSaleItemsResponse   {
+                                                          SaleId = x.SaleId,
+                                                          CodeProduct = x.CodeProduct,
+                                                          NameProduct = x.CodeProductNavigation.Description,
+                                                          Quantities = x.Quantities,
+                                                          UnitPrices = x.UnitPrices,
+                                                    }).ToList()));        
     }
 }

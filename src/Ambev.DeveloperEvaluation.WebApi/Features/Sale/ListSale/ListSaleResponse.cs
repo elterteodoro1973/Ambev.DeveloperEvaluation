@@ -19,6 +19,11 @@ public class ListSaleResponse
     public Guid CustomerId { get; set; }
 
     /// <summary>
+    /// The unique CustomerId of the Sale
+    /// </summary>
+    public String  CustomerName { get; set; }
+
+    /// <summary>
     /// The unique SaleDate of the Sale
     /// </summary>
     public DateTime SaleDate { get; set; }
@@ -42,6 +47,6 @@ public class ListSaleResponse
     /// The unique cancelled of the Sale
     /// </summary>
     public bool? Cancelled { get; set; } = false;
-
-    //public ICollection<ListSaleItemsResponse> SaleItems { get; set; } = new List<ListSaleItemsResponse>();
+    
+    public ICollection<ListSaleItemsResponse> SaleItems { get; set; } = new List<ListSaleItemsResponse>();
 }

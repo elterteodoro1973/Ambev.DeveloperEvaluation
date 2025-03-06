@@ -27,4 +27,9 @@ public class ListSaleItemsResponse
     /// The unique CodeProduct of the Sale
     /// </summary>
     public string CodeProduct { get; set; }
+
+    /// <summary>
+    /// The unique CodeProduct of the Sale
+    /// </summary>
+    public string NameProduct { get; set; }
 }

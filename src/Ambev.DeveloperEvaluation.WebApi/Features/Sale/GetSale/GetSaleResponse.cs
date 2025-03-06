@@ -1,5 +1,7 @@
+using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sale.GetSale;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
 
@@ -17,6 +19,11 @@ public class GetSaleResponse
     /// The unique CustomerId of the Sale
     /// </summary>
     public Guid CustomerId { get; set; }
+
+    /// <summary>
+    /// The unique CustomerName of the Sale
+    /// </summary>
+    public string CustomerName { get; set; }
 
     /// <summary>
     /// The unique SaleDate of the Sale
@@ -42,5 +49,7 @@ public class GetSaleResponse
     /// The unique cancelled of the Sale
     /// </summary>
     public bool? Cancelled { get; set; } = false;
-    
+
+    public ICollection<GetSaleItemsResponse> SaleItems { get; set; } = new List<GetSaleItemsResponse>();
+
 }
