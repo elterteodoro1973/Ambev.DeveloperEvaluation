@@ -22,8 +22,7 @@ public static class ActiveProductSpecificationTestData
             Id = f.Random.Guid(),
             Code =  "A00" + f.Random.Int(100, 999).ToString(),            
             Description=  f.Commerce.ProductName(),
-            Image= string.Format(@"{0}.jpg", Guid.NewGuid()),
-            Category= f.Commerce.Categories(1)[0],
+            Image= string.Format(@"{0}.jpg", Guid.NewGuid()),            
             Price =  f.Random.Decimal(10, 4500),
             QuantityInStock=  f.Random.Short(1, 100),
         });

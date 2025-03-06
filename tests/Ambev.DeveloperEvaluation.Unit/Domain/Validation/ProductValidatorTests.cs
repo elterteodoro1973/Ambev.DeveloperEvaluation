@@ -85,27 +85,6 @@ public class ProductValidatorTests
     }
 
 
-    /// <summary>
-    /// Tests that validation fails when Productname exceeds maximum length.
-    /// This test verifies that Productnames longer than 50 characters fail validation.
-    /// The test uses TestDataGenerator to create a Productname that exceeds the maximum
-    /// length limit, ensuring the validation rule is properly enforced.
-    /// </summary>
-    [Fact(DisplayName = "Category longer than maximum length should fail validation")]
-    public void Given_ProductCategoryLongerThanMaximum_When_Validated_Then_ShouldHaveError()
-    {
-        // Arrange
-        var Product = ProductTestData.GenerateValidProduct();
-        Product.Category = ProductTestData.GenerateLongProductname();
-
-        // Act
-        var result = _validator.TestValidate(Product);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Category);
-    }
-
-
 
     /// <summary>
     /// Tests that validation fails for invalid email formats.
@@ -131,26 +110,4 @@ public class ProductValidatorTests
     }
 
 
-    /// <summary>
-    /// Tests that validation fails for invalid phone formats.
-    /// This test verifies that phone numbers that:
-    /// - Don't follow the Brazilian phone number format (+55XXXXXXXXXXXX)
-    /// - Don't have the correct length
-    /// - Don't start with the country code (+55)
-    /// fail validation with appropriate error messages.
-    /// The test uses TestDataGenerator to create invalid phone number formats.
-    /// </summary>
-    [Fact(DisplayName = "Invalid phone formats should fail validation")]
-    public void Given_InvalidCategory_When_Validated_Then_ShouldHaveError()
-    {
-        // Arrange
-        var Product = ProductTestData.GenerateValidProduct();
-        Product.Category = ProductTestData.GenerateValidCategory();
-
-        // Act
-        var result = _validator.TestValidate(Product);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Description);
-    }
 }

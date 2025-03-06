@@ -38,8 +38,7 @@ public class ProductTests
         // Arrange
         var Product = new Product
         {            
-            Description = null,            // 
-            Category = ProductTestData.GenerateValidCategory(), 
+            Description = null,  
             Price = ProductTestData.GenerateValidPrice(), 
             QuantityInStock = 10,                                              
         };

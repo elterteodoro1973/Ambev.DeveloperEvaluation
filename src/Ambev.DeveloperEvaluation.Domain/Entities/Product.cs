@@ -23,9 +23,7 @@ public partial class Product
 
     [StringLength(100)]
     public string Description { get; set; }
-
-    [StringLength(100)]
-    public string Category { get; set; }
+    
 
     [StringLength(256)]
     public string Image { get; set; }
