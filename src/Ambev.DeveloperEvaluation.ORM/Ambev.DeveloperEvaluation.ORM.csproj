@@ -6,6 +6,7 @@
 		<Title>Vendor-Test-Gen-0001</Title>
 	</PropertyGroup>
 	<ItemGroup>
+	  <PackageReference Include="AutoMapper" Version="13.0.1" />
 	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
 	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
 	</ItemGroup>

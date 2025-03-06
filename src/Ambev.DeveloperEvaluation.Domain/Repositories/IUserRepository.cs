@@ -8,6 +8,14 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories;
 public interface IUserRepository
 {
     /// <summary>
+    /// Select all users in the repository
+    /// </summary>    
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The created user</returns>
+    Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken = default);
+
+
+    /// <summary>
     /// Creates a new user in the repository
     /// </summary>
     /// <param name="user">The user to create</param>

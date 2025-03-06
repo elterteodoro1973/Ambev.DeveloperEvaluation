@@ -21,6 +21,17 @@ public class UserRepository : IUserRepository
     }
 
     /// <summary>
+    /// Retrieves all Users from the database
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>A list of all Users</returns>
+
+    public async Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.User.ToListAsync(cancellationToken);
+    }
+
+    /// <summary>
     /// Creates a new user in the database
     /// </summary>
     /// <param name="user">The user to create</param>

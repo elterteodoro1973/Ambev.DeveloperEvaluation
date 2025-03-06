@@ -23,6 +23,16 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <summary>
+    /// Retrieves all Customers from the database
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>A list of all Customers</returns>
+    public async Task<IEnumerable<Customer>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Customer.ToListAsync(cancellationToken);
+    }
+
+    /// <summary>
     /// Creates a new Customer in the database
     /// </summary>
     /// <param name="Customer">The Customer to create</param>
@@ -98,14 +108,6 @@ public class CustomerRepository : ICustomerRepository
         return true;
     }
 
-    /// <summary>
-    /// Retrieves all Customers from the database
-    /// </summary>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>A list of all Customers</returns>
-    public async Task<IEnumerable<Customer>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        return await _context.Customer.ToListAsync(cancellationToken);
-    }
+    
     
 }
