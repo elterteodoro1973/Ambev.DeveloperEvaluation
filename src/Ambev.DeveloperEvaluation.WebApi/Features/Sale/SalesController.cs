@@ -1,16 +1,16 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
-using Ambev.DeveloperEvaluation.Domain.Events;
+using Ambev.DeveloperEvaluation.Domain.Services;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users;
+using Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Rebus.Bus;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale
@@ -26,20 +26,50 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly IBus _bus;
+        private readonly ISaleService _saleService;
 
         /// <summary>
-        /// Initializes a new instance of SalesController
+        /// Initializes a new instance of UsersController
         /// </summary>
         /// <param name="mediator">The mediator instance</param>
         /// <param name="mapper">The AutoMapper instance</param>
-        public SalesController(ILogger<UsersController> logger, IMediator mediator, IMapper mapper, IBus bus)
+        public SalesController(ILogger<UsersController> logger, IMediator mediator, IMapper mapper, IBus bus, ISaleService saleService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _mediator = mediator;
             _mapper = mapper;
             _bus = bus;
+            _saleService = saleService;
         }
 
+        [HttpGet("GetList")]
+        [ProducesResponseType(typeof(ApiResponseWithData<ListUserResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetList(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var response = await _saleService.GetAllAsync(cancellationToken);
+
+                return Ok(new ApiResponseWithData<IEnumerable<ListSaleResponse>>
+                {
+                    Success = true,
+                    Message = "Sales retrieved successfully",
+                    Data = _mapper.Map<IEnumerable<ListSaleResponse>>(response)
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("An error occurred while searching for the Sales!");
+                return BadRequest(new ApiResponseWithData<ListSaleResponse>
+                {
+                    Success = false,
+                    Message = "An error occurred while searching for the Sales: " + e.Message,
+                    Data = new ListSaleResponse()
+                });
+            }
+        }
 
         /// <summary>
         /// Creates a new Sale
@@ -97,21 +127,35 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale
         public async Task<IActionResult> GetSale([FromRoute] Guid id, CancellationToken cancellationToken)
         {
             var request = new GetSaleRequest { Id = id };
-            var validator = new GetSaleRequestValidator();
-            var validationResult = await validator.ValidateAsync(request, cancellationToken);
+            var validator = new GetSaleRequestValidator();            
 
-            if (!validationResult.IsValid)
-                return BadRequest(validationResult.Errors);
-
-            var command = _mapper.Map<GetSaleCommand>(request.Id);
-            var response = await _mediator.Send(command, cancellationToken);
-
-            return Ok(new ApiResponseWithData<GetSaleResponse>
+            try
             {
-                Success = true,
-                Message = "Sale retrieved successfully",
-                Data = _mapper.Map<GetSaleResponse>(response)
-            });
+                var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+                if (!validationResult.IsValid)
+                    return BadRequest(validationResult.Errors);
+
+                var command = _mapper.Map<GetSaleCommand>(request.Id);
+                var response = await _mediator.Send(command, cancellationToken);
+
+                return Ok(new ApiResponseWithData<GetSaleResponse>
+                {
+                    Success = true,
+                    Message = "Sale retrieved successfully",
+                    Data = _mapper.Map<GetSaleResponse>(response)
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("AAn error occurred while searching for the Sale!");
+                return BadRequest(new ApiResponseWithData<GetSaleResponse>
+                {
+                    Success = false,
+                    Message = "An error occurred while searching for the Sale: " + e.Message,
+                    Data = new GetSaleResponse()
+                });
+            }
         }
 
         /// <summary>

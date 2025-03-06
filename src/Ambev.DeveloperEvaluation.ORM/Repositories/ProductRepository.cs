@@ -21,10 +21,10 @@ public class ProductRepository : IProductRepository
     }
 
     /// <summary>
-    /// Retrieves all Customers from the database
+    /// Retrieves all Products from the database
     /// </summary>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>A list of all Customers</returns>
+    /// <returns>A list of all Products</returns>
     public async Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _context.Product.ToListAsync(cancellationToken);

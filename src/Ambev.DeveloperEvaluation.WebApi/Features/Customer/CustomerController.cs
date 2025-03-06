@@ -1,11 +1,13 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Customers.CreateCustomer;
 using Ambev.DeveloperEvaluation.Application.Customers.DeleteCustomer;
 using Ambev.DeveloperEvaluation.Application.Customers.GetCustomer;
+using Ambev.DeveloperEvaluation.Domain.Services;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Customers.CreateCustomer;
 using Ambev.DeveloperEvaluation.WebApi.Features.Customers.DeleteCustomer;
 using Ambev.DeveloperEvaluation.WebApi.Features.Customers.GetCustomer;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users;
+using Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -24,17 +26,50 @@ public class CustomersController : BaseController
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
     private readonly IBus _bus;
+    private readonly ICustomerService _customerService;
+
     /// <summary>
-    /// Initializes a new instance of CustomersController
+    /// Initializes a new instance of UsersController
     /// </summary>
     /// <param name="mediator">The mediator instance</param>
     /// <param name="mapper">The AutoMapper instance</param>
-    public CustomersController(ILogger<UsersController> logger, IMediator mediator, IMapper mapper, IBus bus)
+    public CustomersController(ILogger<UsersController> logger, IMediator mediator, IMapper mapper, IBus bus, ICustomerService customerService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mediator = mediator;
         _mapper = mapper;
         _bus = bus;
+        _customerService = customerService;
+    }
+
+    [HttpGet("GetList")]
+    [ProducesResponseType(typeof(ApiResponseWithData<ListUserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetList(CancellationToken cancellationToken)
+    { 
+        try
+        {
+            var response = await _customerService.GetAllAsync(cancellationToken);
+
+            return Ok(new ApiResponseWithData<IEnumerable<ListCustomerResponse>>
+            {
+                Success = true,
+                Message = "Customers retrieved successfully",
+                Data = _mapper.Map<IEnumerable<ListCustomerResponse>>(response)
+            });
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("An error occurred while searching for the Customers!");
+            return BadRequest(new ApiResponseWithData<ListCustomerResponse>
+            {
+                Success = false,
+                Message = "An error occurred while searching for the Customers: " + e.Message,
+                Data = new ListCustomerResponse()
+            });
+        }
+
     }
 
     /// <summary>
@@ -115,10 +150,11 @@ public class CustomersController : BaseController
         }
         catch (Exception e)
         {
+            _logger.LogWarning($"An error occurred while searching for the customer :{name}");
             return BadRequest(new ApiResponse
             {
                 Success = false,
-                Message = "An error occurred while Customer retrieved: " + e.Message,
+                Message = "An error occurred while searching for the customer: " + e.Message,
             });
         }
     }

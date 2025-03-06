@@ -4,12 +4,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="ValueObjects\**" />
+    <EmbeddedResource Remove="ValueObjects\**" />
+    <None Remove="ValueObjects\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Enums\" />
     <Folder Include="Exceptions\" />
     <Folder Include="Repositories\" />
-    <Folder Include="ValueObjects\" />
   </ItemGroup>
 
   <ItemGroup>

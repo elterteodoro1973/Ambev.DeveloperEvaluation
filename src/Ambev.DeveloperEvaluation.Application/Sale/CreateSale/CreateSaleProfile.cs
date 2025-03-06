@@ -13,14 +13,9 @@ public class CreateSaleProfile : Profile
     /// </summary>
     public CreateSaleProfile()
     {
-        
-
         CreateMap<CreateSaleCommand, Sale>()
                 .ForMember(c => c.Id, m => m.MapFrom(c => Guid.NewGuid()))
                 .ForMember(c => c.CustomerId, m => m.MapFrom(c => c.CustomerId));
-
-
-
         CreateMap<Sale, CreateSaleResult>();
     }
 

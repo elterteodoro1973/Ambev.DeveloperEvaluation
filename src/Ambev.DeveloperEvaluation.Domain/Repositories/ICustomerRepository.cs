@@ -7,6 +7,11 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories;
 /// </summary>
 public interface ICustomerRepository
 {
+    /// <summary>
+    /// Select all users in the repository
+    /// </summary>    
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The created user</returns>
     Task<IEnumerable<Customer>> GetAllAsync(CancellationToken cancellationToken = default);
 
     /// <summary>

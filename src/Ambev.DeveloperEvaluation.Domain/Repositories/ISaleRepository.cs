@@ -8,6 +8,14 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories;
 public interface ISaleRepository
 {
     /// <summary>
+    /// Select all users in the repository
+    /// </summary>    
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The created user</returns>
+    Task<IEnumerable<Sale>> GetAllAsync(CancellationToken cancellationToken = default);
+
+
+    /// <summary>
     /// Creates a new Sale in the repository
     /// </summary>
     /// <param name="Sale">The Sale to create</param>
@@ -22,8 +30,7 @@ public interface ISaleRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The Sale if found, null otherwise</returns>
     Task<Sale?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-
-    
+       
 
     /// <summary>
     /// Deletes a Sale from the repository

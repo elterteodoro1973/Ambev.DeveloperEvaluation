@@ -1,7 +1,9 @@
-﻿using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
+﻿using Ambev.DeveloperEvaluation.Application.Customers.DeleteCustomer;
+using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
 using Ambev.DeveloperEvaluation.Application.Users.DeleteUser;
 using Ambev.DeveloperEvaluation.Application.Users.GetUser;
-using Ambev.DeveloperEvaluation.Domain.Events;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Services;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.DeleteUser;
@@ -10,7 +12,6 @@ using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Rebus.Bus;
-using Serilog;
 
 
 
@@ -23,25 +24,56 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Users;
 [Route("api/[controller]")]
 public class UsersController : BaseController
 {
-
-    private readonly ILogger<UsersController> _logger;
-    
+    private readonly ILogger<UsersController> _logger;    
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
     private readonly IBus _bus;
+    private readonly IUserService _userService;
 
     /// <summary>
     /// Initializes a new instance of UsersController
     /// </summary>
     /// <param name="mediator">The mediator instance</param>
     /// <param name="mapper">The AutoMapper instance</param>
-    public UsersController(ILogger<UsersController> logger, IMediator mediator, IMapper mapper, IBus bus)
+    public UsersController(ILogger<UsersController> logger, IMediator mediator, IMapper mapper, IBus bus, IUserService userService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mediator = mediator;
         _mapper = mapper;
-        _bus = bus;  
+        _bus = bus;
+        _userService = userService;
     }
+
+    [HttpGet("GetList")]
+    [ProducesResponseType(typeof(ApiResponseWithData<ListUserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetList(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await _userService.GetAllAsync(cancellationToken);
+
+            return Ok(new ApiResponseWithData<IEnumerable<ListUserResponse>>
+            {
+                Success = true,
+                Message = "User retrieved successfully",
+                Data = _mapper.Map<IEnumerable<ListUserResponse>>(response)
+            });
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("An error occurred while searching for the users!");
+            return BadRequest(new ApiResponseWithData<ListUserResponse>
+            {
+                Success = false,
+                Message = "An error occurred while searching for the users: " + e.Message,
+                Data = new ListUserResponse()
+            });
+        }
+    }
+
+
 
     /// <summary>
     /// Creates a new user
@@ -100,20 +132,36 @@ public class UsersController : BaseController
     {
         var request = new GetUserRequest { Id = id };
         var validator = new GetUserRequestValidator();
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-            return BadRequest(validationResult.Errors);
-
-        var command = _mapper.Map<GetUserCommand>(request.Id);
-        var response = await _mediator.Send(command, cancellationToken);
-
-        return Ok(new ApiResponseWithData<GetUserResponse>
+        
+        try
         {
-            Success = true,
-            Message = "User retrieved successfully",
-            Data = _mapper.Map<GetUserResponse>(response)
-        });
+            var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors);
+
+            var command = _mapper.Map<GetUserCommand>(request.Id);
+            var response = await _mediator.Send(command, cancellationToken);
+
+            return Ok(new ApiResponseWithData<GetUserResponse>
+            {
+                Success = true,
+                Message = "User retrieved successfully",
+                Data = _mapper.Map<GetUserResponse>(response)
+            });
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("An error occurred while searching for the user!");
+            return BadRequest(new ApiResponseWithData<GetUserResponse>
+            {
+                Success = false,
+                Message = "An error occurred while searching for the user: " + e.Message,
+                Data = new GetUserResponse()
+            });
+        }
+
+
     }
 
     /// <summary>
