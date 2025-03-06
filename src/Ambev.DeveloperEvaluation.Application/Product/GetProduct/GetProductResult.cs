@@ -24,11 +24,7 @@ public class GetProductResult
     /// The unique identifier of the Product
     /// </summary>
     public string Description { get; set; }
-
-    /// <summary>
-    /// The unique identifier of the Product
-    /// </summary>
-    public string Category { get; set; }
+    
 
     /// <summary>
     /// The unique identifier of the Product

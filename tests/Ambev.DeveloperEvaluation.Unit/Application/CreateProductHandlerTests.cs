@@ -45,8 +45,7 @@ public class CreateProductHandlerTests
             Id = Guid.NewGuid(),            
             Code = command.Code,            
             Description = command.Description,
-            Image = command.Image,
-            Category = command.Category,
+            Image = command.Image,            
             Price = command.Price,
             QuantityInStock = command.QuantityInStock
         };
@@ -95,8 +94,7 @@ public class CreateProductHandlerTests
             Id = Guid.NewGuid(),
             Code = command.Code,            
             Description = command.Description,
-            Image = command.Image,
-            Category = command.Category,
+            Image = command.Image,            
             Price = command.Price,
             QuantityInStock = command.QuantityInStock
         };
@@ -111,8 +109,7 @@ public class CreateProductHandlerTests
         _mapper.Received(1).Map<Product>(Arg.Is<CreateProductCommand>(c =>            
             c.Code == command.Code &&           
             c.Description == command.Description &&
-            c.Image == command.Image &&
-            c.Category == command.Category &&
+            c.Image == command.Image &&            
             c.Price == command.Price &&
             c.QuantityInStock == command.QuantityInStock));
     }

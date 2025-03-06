@@ -22,8 +22,7 @@ public static class ProductTestData
     private static readonly Faker<Product> ProductFaker = new Faker<Product>()
         .RuleFor(u => u.Code, f => "A00" + f.Random.Int(100, 999).ToString())        
         .RuleFor(u => u.Description, f => f.Commerce.ProductName())
-        .RuleFor(u => u.Image, string.Format(@"{0}.jpg", Guid.NewGuid()))
-        .RuleFor(u => u.Category, f => f.Commerce.Categories(1)[0])
+        .RuleFor(u => u.Image, string.Format(@"{0}.jpg", Guid.NewGuid()))        
         .RuleFor(u => u.Price.Value, f => f.Random.Decimal(10, 4500))
         .RuleFor(u => u.QuantityInStock, f => f.Random.Short(1, 100));
 
@@ -53,18 +52,6 @@ public static class ProductTestData
 
 
 
-    /// <summary>
-    /// Generates a valid email address using Faker.
-    /// The generated email will:
-    /// - Follow the standard email format (Product@domain.com)
-    /// - Have valid characters in both local and domain parts
-    /// - Have a valid TLD
-    /// </summary>
-    /// <returns>A valid email address.</returns>
-    public static string GenerateValidCategory()
-    {
-        return new Faker().Commerce.Categories(1)[0];
-    }
 
 
     /// <summary>

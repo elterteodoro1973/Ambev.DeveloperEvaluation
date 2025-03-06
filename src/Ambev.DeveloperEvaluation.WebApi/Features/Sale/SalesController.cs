@@ -43,7 +43,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale
         }
 
         [HttpGet("GetList")]
-        [ProducesResponseType(typeof(ApiResponseWithData<ListUserResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseWithData<ListSaleResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetList(CancellationToken cancellationToken)
