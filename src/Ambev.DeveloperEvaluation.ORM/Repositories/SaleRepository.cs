@@ -26,8 +26,12 @@ public class SaleRepository : ISaleRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>A list of all Sales</returns>
     public async Task<IEnumerable<Sale>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        return await _context.Sale.Include(c=>c.SaleItems).ToListAsync(cancellationToken);
+    {  
+        return await _context.Sale
+            .Include(c => c.SaleItems)
+            .ThenInclude(si => si.CodeProductNavigation)
+            .Include(c => c.Customer)
+            .ToListAsync(cancellationToken);
     }
 
     /// <summary>
@@ -40,7 +44,7 @@ public class SaleRepository : ISaleRepository
     {
         await _context.Sale.AddAsync(Sale, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
-        return Sale;  
+        return Sale;
     }
 
     /// <summary>
@@ -51,9 +55,13 @@ public class SaleRepository : ISaleRepository
     /// <returns>The Sale if found, null otherwise</returns>
     public async Task<Sale?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Sale.Include(c=>c.SaleItems).Include(c => c.Customer).FirstOrDefaultAsync(o=> o.Id == id, cancellationToken);
+        return await _context.Sale
+            .Include(c => c.SaleItems)
+            .ThenInclude(si => si.CodeProductNavigation)
+            .Include(c => c.Customer)
+            .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
     }
-    
+
 
     /// <summary>
     /// Deletes a Sale from the database
@@ -67,7 +75,7 @@ public class SaleRepository : ISaleRepository
         if (Sale == null)
             return false;
 
-        _context.Database.BeginTransactionAsync(cancellationToken);
+        await _context.Database.BeginTransactionAsync(cancellationToken);
         try
         {
             _context.SaleItems.RemoveRange(Sale.SaleItems);
@@ -84,7 +92,7 @@ public class SaleRepository : ISaleRepository
             throw;
         }
 
-        
+
         return true;
     }
 }

@@ -51,5 +51,7 @@ public class GetSaleResult
     /// <summary>
     /// The unique SaleItems of the Sale
     /// </summary>
-    public ICollection<SaleItems> SaleItems { get; set; } = new List<SaleItems>();
+    public ICollection<GetSaleItemsResult> SaleItems { get; set; } = new List<GetSaleItemsResult>();
+
+
 }

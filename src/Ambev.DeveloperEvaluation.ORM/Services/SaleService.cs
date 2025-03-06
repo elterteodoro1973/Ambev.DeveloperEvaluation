@@ -11,10 +11,12 @@ namespace Ambev.DeveloperEvaluation.ORM.Services;
 public class SaleService : ISaleService
 {
     private readonly ISaleRepository _saleRepository;
+    private readonly IProductRepository _productRepository;
 
-    public SaleService(ISaleRepository saleRepository)
+    public SaleService(ISaleRepository saleRepository, IProductRepository productRepository)
     {
         _saleRepository = saleRepository;
+        _productRepository = productRepository;
     }
     /// <summary>
     /// Handles the GetUserCommand request
@@ -25,8 +27,11 @@ public class SaleService : ISaleService
     {
         var sales = await _saleRepository.GetAllAsync(cancellationToken);
         if (sales == null)
-            throw new KeyNotFoundException($"Sale not found");
+            throw new KeyNotFoundException($"Sale not found"); 
 
         return sales;
     }
+
+    
+
 }
