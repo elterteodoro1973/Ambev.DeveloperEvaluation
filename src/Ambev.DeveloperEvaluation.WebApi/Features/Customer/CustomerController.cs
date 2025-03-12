@@ -43,33 +43,13 @@ public class CustomersController : BaseController
     }
 
     [HttpGet("GetList")]
-    [ProducesResponseType(typeof(ApiResponseWithData<ListCustomerResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ListCustomerResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetList(CancellationToken cancellationToken)
-    { 
-        try
-        {
-            var response = await _customerService.GetAllAsync(cancellationToken);
-
-            return Ok(new ApiResponseWithData<IEnumerable<ListCustomerResponse>>
-            {
-                Success = true,
-                Message = "Customers retrieved successfully",
-                Data = _mapper.Map<IEnumerable<ListCustomerResponse>>(response)
-            });
-        }
-        catch (Exception e)
-        {
-            _logger.LogError("An error occurred while searching for the Customers!");
-            return BadRequest(new ApiResponseWithData<ListCustomerResponse>
-            {
-                Success = false,
-                Message = "An error occurred while searching for the Customers: " + e.Message,
-                Data = new ListCustomerResponse()
-            });
-        }
-
+    public async Task<IEnumerable<ListCustomerResponse>> GetList(CancellationToken cancellationToken)
+    {        
+         var response = await _customerService.GetAllAsync(cancellationToken);
+         return _mapper.Map<IEnumerable<ListCustomerResponse>>(response);       
     }
 
     /// <summary>

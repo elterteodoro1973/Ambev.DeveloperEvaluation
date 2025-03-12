@@ -1,1 +1,1 @@
-# backend
+Acesse a pasta "/template/backend/Docs" para ver documentação integral do projeto
