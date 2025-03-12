@@ -2,6 +2,7 @@
 using Ambev.DeveloperEvaluation.Application.Products.DeleteProduct;
 using Ambev.DeveloperEvaluation.Application.Products.GetProduct;
 using Ambev.DeveloperEvaluation.Domain.Services;
+using Ambev.DeveloperEvaluation.ORM.Services;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.CreateProduct;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.DeleteProduct;
@@ -46,29 +47,10 @@ public class ProductsController : BaseController
     [ProducesResponseType(typeof(ApiResponseWithData<ListProductResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetList(CancellationToken cancellationToken)
+    public async Task<IEnumerable<ListProductResponse>> GetList(CancellationToken cancellationToken)
     {
-        try
-        {
-            var response = await _productService.GetAllAsync(cancellationToken);
-
-            return Ok(new ApiResponseWithData<IEnumerable<ListProductResponse>>
-            {
-                Success = true,
-                Message = "Customers retrieved successfully",
-                Data = _mapper.Map<IEnumerable<ListProductResponse>>(response)
-            });
-        }
-        catch (Exception e)
-        {
-            _logger.LogError("An error occurred while searching for the products!");
-            return BadRequest(new ApiResponseWithData<ListProductResponse>
-            {
-                Success = false,
-                Message = "An error occurred while searching for the Producs: " + e.Message,
-                Data = new ListProductResponse()
-            });
-        }
+        var response = await _productService.GetAllAsync(cancellationToken);
+        return _mapper.Map<IEnumerable<ListProductResponse>>(response);
     }
 
 

@@ -4,6 +4,7 @@ using Ambev.DeveloperEvaluation.Application.Users.DeleteUser;
 using Ambev.DeveloperEvaluation.Application.Users.GetUser;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
+using Ambev.DeveloperEvaluation.ORM.Services;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.DeleteUser;
@@ -42,37 +43,17 @@ public class UsersController : BaseController
         _mapper = mapper;
         _bus = bus;
         _userService = userService;
-    }
+    }  
 
     [HttpGet("GetList")]
     [ProducesResponseType(typeof(ApiResponseWithData<ListUserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetList(CancellationToken cancellationToken)
+    public async Task<IEnumerable<ListUserResponse>> GetList(CancellationToken cancellationToken)
     {
-        try
-        {
-            var response = await _userService.GetAllAsync(cancellationToken);
-
-            return Ok(new ApiResponseWithData<IEnumerable<ListUserResponse>>
-            {
-                Success = true,
-                Message = "User retrieved successfully",
-                Data = _mapper.Map<IEnumerable<ListUserResponse>>(response)
-            });
-        }
-        catch (Exception e)
-        {
-            _logger.LogError("An error occurred while searching for the users!");
-            return BadRequest(new ApiResponseWithData<ListUserResponse>
-            {
-                Success = false,
-                Message = "An error occurred while searching for the users: " + e.Message,
-                Data = new ListUserResponse()
-            });
-        }
+        var response = await _userService.GetAllAsync(cancellationToken);
+        return _mapper.Map<IEnumerable<ListUserResponse>>(response);
     }
-
 
 
     /// <summary>

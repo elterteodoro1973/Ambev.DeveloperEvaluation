@@ -2,6 +2,7 @@
 using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Ambev.DeveloperEvaluation.Domain.Services;
+using Ambev.DeveloperEvaluation.ORM.Services;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.DeleteSale;
@@ -41,35 +42,17 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale
             _bus = bus;
             _saleService = saleService;
         }
-
+       
         [HttpGet("GetList")]
         [ProducesResponseType(typeof(ApiResponseWithData<ListSaleResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetList(CancellationToken cancellationToken)
+        public async Task<IEnumerable<ListSaleResponse>> GetList(CancellationToken cancellationToken)
         {
-            try
-            {
-                var response = await _saleService.GetAllAsync(cancellationToken);
-
-                return Ok(new ApiResponseWithData<IEnumerable<ListSaleResponse>>
-                {
-                    Success = true,
-                    Message = "Sales retrieved successfully",
-                    Data = _mapper.Map<IEnumerable<ListSaleResponse>>(response)
-                });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError("An error occurred while searching for the Sales!");
-                return BadRequest(new ApiResponseWithData<ListSaleResponse>
-                {
-                    Success = false,
-                    Message = "An error occurred while searching for the Sales: " + e.Message,
-                    Data = new ListSaleResponse()
-                });
-            }
+            var response = await _saleService.GetAllAsync(cancellationToken);
+            return _mapper.Map<IEnumerable<ListSaleResponse>>(response);
         }
+
 
         /// <summary>
         /// Creates a new Sale

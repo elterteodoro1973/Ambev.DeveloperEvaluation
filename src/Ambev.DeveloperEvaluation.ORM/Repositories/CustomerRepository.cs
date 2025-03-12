@@ -76,7 +76,7 @@ public class CustomerRepository : ICustomerRepository
     /// <returns>The Customer if found, null otherwise</returns>
     public async Task<Customer?> GetByPartialNameAsync(string name, CancellationToken cancellationToken = default)
     {
-        return await _context.Customer.FirstOrDefaultAsync(o => o.Name.ToLower().Contains(name), cancellationToken);
+        return await _context.Customer.FirstOrDefaultAsync(o => o.Name.ToLower().Contains(name.ToLower()), cancellationToken);
     }
 
 
