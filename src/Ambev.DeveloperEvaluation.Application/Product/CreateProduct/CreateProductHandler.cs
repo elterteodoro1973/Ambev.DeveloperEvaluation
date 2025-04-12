@@ -4,6 +4,7 @@ using FluentValidation;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Common.Security;
+using Ambev.DeveloperEvaluation.ORM.Repositories;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 
@@ -40,6 +41,15 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Create
 
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
+
+
+        var existingCodeProduct = await _productRepository.GetByCodeAsync(command.Code, cancellationToken);
+        if (existingCodeProduct != null)
+            throw new InvalidOperationException($"Product with Code=> '{command.Code}' already exists");
+
+        var existingDescriptionProduct = await _productRepository.GetByDescriptionAsync(command.Description, cancellationToken);
+        if (existingDescriptionProduct != null)
+            throw new InvalidOperationException($"Product with Description=> '{command.Description}' already exists");
 
 
         var product = _mapper.Map<Product>(command);

@@ -41,7 +41,7 @@ public class GetCustomerHandler : IRequestHandler<GetCustomerCommand, GetCustome
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var Customer = await _customerRepository.GetByNameAsync(request.Name, cancellationToken);
+        var Customer = await _customerRepository.GetByPartialNameAsync(request.Name, cancellationToken);
         if (Customer == null)
             throw new KeyNotFoundException($"Customer with ID {request.Name} not found");
 
