@@ -14,4 +14,16 @@ public class CreateCustomerResult
     /// </summary>
     /// <value>A GUID that uniquely identifies the created Customer in the system.</value>
     public Guid Id { get; set; }
+
+    public string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the role of the Customer.
+    /// </summary>
+    public string Phone { get; set; }
+
+    /// <summary>
+    /// Gets or sets the role of the Customer.
+    /// </summary>
+    public string Email { get; set; }
 }

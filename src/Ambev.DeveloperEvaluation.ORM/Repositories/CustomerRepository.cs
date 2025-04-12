@@ -88,7 +88,7 @@ public class CustomerRepository : ICustomerRepository
     /// <returns>The Customer if found, null otherwise</returns>
     public async Task<Customer?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        return await _context.Customer.FirstOrDefaultAsync(u => u.Email == email, cancellationToken); ;
+        return await _context.Customer.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower(), cancellationToken); ;
     }
 
     /// <summary>

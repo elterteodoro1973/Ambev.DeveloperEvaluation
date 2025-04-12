@@ -73,7 +73,7 @@ public class ProductRepository : IProductRepository
     /// <returns>The user if found, null otherwise</returns>
     public async Task<Product?> GetByDescriptionAsync(string description, CancellationToken cancellationToken = default)
     {
-        return await _context.Product.FirstOrDefaultAsync(o => o.Description.ToLower().Contains(description) , cancellationToken);
+        return await _context.Product.FirstOrDefaultAsync(o => o.Description.ToLower().Contains(description.ToLower()) , cancellationToken);
     }
 
     /// <summary>

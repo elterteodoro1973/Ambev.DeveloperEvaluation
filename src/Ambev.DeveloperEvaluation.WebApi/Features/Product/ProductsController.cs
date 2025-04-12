@@ -2,7 +2,6 @@
 using Ambev.DeveloperEvaluation.Application.Products.DeleteProduct;
 using Ambev.DeveloperEvaluation.Application.Products.GetProduct;
 using Ambev.DeveloperEvaluation.Domain.Services;
-using Ambev.DeveloperEvaluation.ORM.Services;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.CreateProduct;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.DeleteProduct;
@@ -43,15 +42,78 @@ public class ProductsController : BaseController
         _productService = productService;
     }
 
+
     [HttpGet("GetList")]
-    [ProducesResponseType(typeof(ApiResponseWithData<ListProductResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-    public async Task<IEnumerable<ListProductResponse>> GetList(CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(ApiResponseShortListData<ListProductResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponseShortData<GetProductResponse>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponseShortData<GetProductResponse>), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetList(CancellationToken cancellationToken)
     {
-        var response = await _productService.GetAllAsync(cancellationToken);
-        return _mapper.Map<IEnumerable<ListProductResponse>>(response);
+        try
+        {
+            var response = await _productService.GetAllAsync(cancellationToken);
+            return new JsonResult(new { Success = true, Message = "Products retrieved successfully", Data = _mapper.Map<List<ListProductResponse>>(response) });
+        }
+        catch (Exception e)
+        {
+            _logger.LogWarning($"An error occurred while retrieving the Products: {e.Message}");
+            return BadRequest(new ApiResponseShortData<GetProductResponse>
+            {
+                Success = false,
+                Message = "An error occurred while retrieving the Products: " + e.Message,
+                Data = null
+            });
+        }
     }
+
+
+    /// <summary>
+    /// Retrieves a Product by their name
+    /// </summary>
+    /// <param name="id">The unique identifier of the Product</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The Product details if found</returns>
+    [HttpGet("{code}")]
+    [ProducesResponseType(typeof(ApiResponseShortData<GetProductResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponseShortData<GetProductResponse>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponseShortData<GetProductResponse>), StatusCodes.Status404NotFound)]
+
+    public async Task<IActionResult> GetProduct([FromRoute] string code, CancellationToken cancellationToken)
+    {
+        var request = new GetProductRequest { Code = code };
+        var validator = new GetProductRequestValidator();
+
+        try
+        {
+            var validationResult = await validator.ValidateAsync(request, cancellationToken);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(new ApiResponseShortData<GetProductResponse>
+                {
+                    Success = false,
+                    Message = "An error occurred while searching for the Product: " + validationResult.Errors.FirstOrDefault().ErrorMessage.ToString(),
+                    Data = null
+                });
+            }
+
+            var command = _mapper.Map<GetProductCommand>(request.Code);
+            var response = await _mediator.Send(command, cancellationToken);
+
+            return new JsonResult(new { Success = true, Message = "Product retrieved successfully", Data = _mapper.Map<GetProductResponse>(response) });
+        }
+        catch (Exception e)
+        {
+            _logger.LogWarning($"An error occurred while searching for the Product :{code}");
+            return BadRequest(new ApiResponseShortData<GetProductResponse>
+            {
+                Success = false,
+                Message = "An error occurred while searching for the Product: " + e.Message,
+                Data = null
+            });
+        }
+    }
+
+
 
 
     /// <summary>
@@ -61,26 +123,35 @@ public class ProductsController : BaseController
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The created Product details</returns>
     [HttpPost]
-    [ProducesResponseType(typeof(ApiResponseWithData<CreateProductResponse>), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponseShortData<CreateProductResponse>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponseShortData<CreateProductResponse>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
     {
-        var validator = new CreateProductRequestValidator();        
+        var validator = new CreateProductRequestValidator();
 
         try
         {
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
             if (!validationResult.IsValid)
-                return BadRequest(validationResult.Errors);
+            {
+                return BadRequest(new ApiResponseShortData<GetProductResponse>
+                {
+                    Success = false,
+                    Message = "An error occurred while Product created: " + validationResult.Errors.FirstOrDefault().ErrorMessage.ToString(),
+                    Data = null
+                });
+            }
 
             var command = _mapper.Map<CreateProductCommand>(request);
             var response = await _mediator.Send(command, cancellationToken);
 
-            await _bus.Advanced.Routing.Send("Ambev",$"Product nº: {request.Code.ToString()} created with successfully ");
-            _logger.LogWarning($"Product nº: {request.Code.ToString()} created with successfully!");
+            await _bus.Advanced.Routing.Send("Ambev", $"Product: {request.Description} created with successfully ");
+            _logger.LogWarning($"Product: {request.Description} created with successfully!");
 
-            return Created(string.Empty, new ApiResponseWithData<CreateProductResponse>
+            //int divisor = 0;
+            //int resultado = 10 / divisor;
+
+            return Created(string.Empty, new ApiResponseShortData<CreateProductResponse>
             {
                 Success = true,
                 Message = "Product created successfully",
@@ -89,61 +160,16 @@ public class ProductsController : BaseController
         }
         catch (Exception e)
         {
-            _logger.LogError($"An error occurred while created Product: {request.Code.ToString()}!");
-            return BadRequest(new ApiResponse
+            _logger.LogError($"An error occurred while Product created:: {request.Description}!");
+            return BadRequest(new ApiResponseShortData<CreateProductRequest>
             {
                 Success = false,
-                Message = "An error occurred while created Product: " + e.Message,
+                Message = "An error occurred while Product created: " + e.Message,
+                Data = request
             });
         }
     }
 
-    /// <summary>
-    /// Retrieves a Product by their ID
-    /// </summary>
-    /// <param name="Code">The unique identifier of the Product</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The Product details if found</returns>
-    [HttpGet("{code}")]
-    [ProducesResponseType(typeof(ApiResponseWithData<GetProductResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetProduct([FromRoute] string code, CancellationToken cancellationToken)
-    {
-        var request = new GetProductRequest { Code = code };
-        var validator = new GetProductRequestValidator();
-       
-        try
-        {
-            var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-            if (!validationResult.IsValid)
-                return BadRequest(validationResult.Errors);
-
-            var command = _mapper.Map<GetProductCommand>(request.Code);
-            var response = await _mediator.Send(command, cancellationToken);
-
-            await _bus.Advanced.Routing.Send("Ambev", $"deleted Product:{command.Code.ToString()}");
-            _logger.LogWarning($"Product:{request.Code.ToString()} retrieved successfully!");
-
-            return Ok(new ApiResponseWithData<GetProductResponse>
-            {
-                Success = true,
-                Message = "Product retrieved successfully",
-                Data = _mapper.Map<GetProductResponse>(response)
-            });
-        }
-        catch (Exception e)
-        {
-            _logger.LogError($"An error occurred while searching for the product: {code.ToString()}!");
-            return BadRequest(new ApiResponseWithData<GetProductResponse>
-            {
-                Success = false,
-                Message = "An error occurred while searching for the product: " + e.Message,
-                Data = new GetProductResponse()
-            });
-        }
-    }
 
     /// <summary>
     /// Deletes a Product by their ID
@@ -152,38 +178,46 @@ public class ProductsController : BaseController
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Success response if the Product was deleted</returns>
     [HttpDelete("{code}")]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponseShort), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponseShort), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponseShort), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteProduct([FromRoute] string code, CancellationToken cancellationToken)
     {
         var request = new DeleteProductRequest { Code = code };
-        var validator = new DeleteProductRequestValidator();       
+        var validator = new DeleteProductRequestValidator();
 
         try
         {
-            var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
+            var validationResult = await validator.ValidateAsync(request, cancellationToken);  
             if (!validationResult.IsValid)
-                return BadRequest(validationResult.Errors);
+            {
+                return BadRequest(new ApiResponseShort
+                {
+                    Success = false,
+                    Message = "An error occurred while  deleted Product: " + validationResult.Errors.FirstOrDefault().ErrorMessage.ToString(),
+                });
+            }
 
             var command = _mapper.Map<DeleteProductCommand>(request.Code);
             await _mediator.Send(command, cancellationToken);
 
-            return Ok(new ApiResponse
-            {
-                Success = true,
-                Message = "Product deleted successfully"
-            });
+            await _bus.Advanced.Routing.Send("Ambev", $"Product deleted nº:{request.Code.ToString()}");
+            _logger.LogWarning($"Product deleted nº:{request.Code.ToString()}");
+
+            return new JsonResult(new { Success = true, Message = $"Product code:{request.Code.ToString()}, deleted  with successfully" });
+
         }
         catch (Exception e)
         {
-            _logger.LogWarning($"An error occurred while Product deleted::{request.Code.ToString()} !");
-            return BadRequest(new ApiResponse
+            _logger.LogWarning($"An error occurred while deleted Product :{request.Code.ToString()} !");
+            return BadRequest(new ApiResponseShort
             {
                 Success = false,
                 Message = "An error occurred while Product deleted: " + e.Message,
             });
         }
     }
+
+
+
 }

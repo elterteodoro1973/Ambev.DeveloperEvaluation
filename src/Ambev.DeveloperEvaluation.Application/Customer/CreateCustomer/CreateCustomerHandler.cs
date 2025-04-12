@@ -43,11 +43,11 @@ public class CreateCustomerHandler : IRequestHandler<CreateCustomerCommand, Crea
 
         var existingEmailCustomer = await _customerRepository.GetByEmailAsync(command.Email, cancellationToken);
         if (existingEmailCustomer != null)
-            throw new InvalidOperationException($"Customer with email {command.Email} already exists");
+            throw new InvalidOperationException($"Customer with email=> '{command.Email}' already exists");
 
-        var existingNameCustomer = await _customerRepository.GetByEmailAsync(command.Email, cancellationToken);
+        var existingNameCustomer = await _customerRepository.GetByNameAsync(command.Name, cancellationToken);
         if (existingNameCustomer != null)
-            throw new InvalidOperationException($"Customer with name {command.Email} already exists");
+            throw new InvalidOperationException($"Customer with name=>'{command.Name}' already exists");
 
 
         var customer = _mapper.Map<Customer>(command);        
