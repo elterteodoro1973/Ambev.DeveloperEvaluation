@@ -97,7 +97,6 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale
                     });
                 }
 
-
                 var command = _mapper.Map<GetSaleCommand>(request.Id);
                 var response = await _mediator.Send(command, cancellationToken);
 
@@ -117,7 +116,6 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale
 
 
 
-
         /// <summary>
         /// Creates a new Sale
         /// </summary>
@@ -134,7 +132,6 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale
             try
             {
                 var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
                 if (!validationResult.IsValid)
                 {
                     return BadRequest(new ApiResponseShortData<GetSaleResponse>
@@ -189,7 +186,6 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale
             try
             {
                 var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
                 if (!validationResult.IsValid)
                 {
                     return BadRequest(new ApiResponseShort

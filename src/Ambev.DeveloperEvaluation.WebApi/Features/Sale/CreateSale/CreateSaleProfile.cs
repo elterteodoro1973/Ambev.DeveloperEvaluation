@@ -13,12 +13,25 @@ public class CreateSaleProfile : Profile
     /// </summary>
     public CreateSaleProfile()
     {
-
-        CreateMap<CreateSaleItemsRequest, CreateSaleItemsCommand>();
         CreateMap<CreateSaleRequest, CreateSaleCommand>()
-                .ForMember(c => c.CustomerId, m => m.MapFrom(c => c.CustomerId))                
-                .ForMember(c => c.SaleItems, m => m.MapFrom(c => c.SaleItems));
+                 .ForMember(c => c.CustomerId, m => m.MapFrom(c => c.CustomerId))
+                 .ForMember(c => c.SaleItems, m => m.MapFrom(c => c.SaleItems.Select(c => new CreateSaleItemsCommand
+                 {
+                     CodeProduct = c.CodeProduct,
+                     Quantities = c.Quantities,
+                     UnitPrices = c.UnitPrices,
+                 }).ToList())); ;
 
-        CreateMap<CreateSaleResult, CreateSaleResponse>();
+        CreateMap<CreateSaleResult, CreateSaleResponse>()
+                .ForMember(c => c.SaleItems, m => m.MapFrom(c => c.SaleItems.Select(c => new CreateSaleItemsResponse
+                {
+                    CodeProduct = c.CodeProduct,
+                    Quantities = c.Quantities,
+                    UnitPrices = c.UnitPrices,
+                }).ToList()));
+
+       
+
+
     }
 }

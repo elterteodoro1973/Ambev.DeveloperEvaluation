@@ -10,20 +10,22 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 /// </summary>
 public class CreateSaleCommandValidator : AbstractValidator<CreateSaleCommand>
 {
-    /// <summary>
-    /// Initializes a new instance of the CreateSaleCommandValidator with defined validation rules.
-    /// </summary>
-    /// <remarks>
-    /// Validation rules include:
-    /// - Email: Must be in valid format (using EmailValidator)
-    /// - Salename: Required, must be between 3 and 50 characters
-    /// - Password: Must meet security requirements (using PasswordValidator)
-    /// - Phone: Must match international format (+X XXXXXXXXXX)
-    /// - Status: Cannot be set to Unknown
-    /// - Role: Cannot be set to None
-    /// </remarks>
     public CreateSaleCommandValidator()
     {
-        RuleFor(Sale => Sale.CustomerId).NotEmpty();        
+        RuleFor(Sale => Sale.CustomerId).NotEmpty();
+
+        RuleFor(Sale => Sale.SaleItems)
+            .Must(saleItems =>
+            {
+                var groupedItems = saleItems.GroupBy(c => c.CodeProduct)
+                    .Select(g => new
+                    {
+                        CodeProduct = g.Key,
+                        TotalQuantities = g.Sum(c => c.Quantities)
+                    });
+
+                return groupedItems.All(item => item.TotalQuantities < 20);
+            })
+            .WithMessage("The total quantities for any product must be less than 20.");
     }
 }

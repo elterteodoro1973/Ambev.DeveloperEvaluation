@@ -1,4 +1,7 @@
-﻿using MediatR;
+﻿using Ambev.DeveloperEvaluation.Common.Validation;
+using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
+using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 
@@ -12,11 +15,10 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 /// that returns a <see cref="CreateSaleResult"/>.
 /// 
 /// The data provided in this command is validated using the 
-/// <see cref="CreateSaleCommandValidator"/> which extends 
 /// <see cref="AbstractValidator{T}"/> to ensure that the fields are correctly 
 /// populated and follow the required rules.
 /// </remarks>
-public class CreateSaleItemsCommand 
+public class CreateSaleItemsResult
 {
     /// <summary>
     /// The unique SaleItems of the Sale
@@ -26,7 +28,7 @@ public class CreateSaleItemsCommand
     /// <summary>
     /// The unique SaleItems of the Sale
     /// </summary>
-    public int Quantities { get; set; }=0;
+    public int Quantities { get; set; } = 0;
 
     /// <summary>
     /// The unique SaleItems of the Sale

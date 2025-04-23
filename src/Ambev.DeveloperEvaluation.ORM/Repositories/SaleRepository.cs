@@ -1,6 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Ambev.DeveloperEvaluation.ORM.Repositories;
 
@@ -40,12 +41,32 @@ public class SaleRepository : ISaleRepository
     /// <param name="Sale">The Sale to create</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The created Sale</returns>
-    public async Task<Sale> CreateAsync(Sale Sale, CancellationToken cancellationToken = default)
+    public async Task<Sale> CreateAsync(Sale sale, CancellationToken cancellationToken = default)
     {
-        await _context.Sale.AddAsync(Sale, cancellationToken);
+        var id = Guid.NewGuid();
+
+        sale.SaleItems = await AgrupamentoItens(sale.SaleItems.Select(c => new SaleItems
+        {
+            //SaleId = id,
+            CodeProduct = c.CodeProduct,
+            Quantities = c.Quantities,
+            UnitPrices = c.UnitPrices,
+        }).ToList(), cancellationToken);
+
+        
+
+        sale.SaleDate = DateTime.UtcNow;
+        sale.TotalGrossValue = sale.SaleItems.Sum(c => c.Quantities * c.UnitPrices);
+        sale.Discounts = await Desconto(sale.SaleItems, cancellationToken);
+        sale.TotalNetValue = sale.TotalGrossValue - (sale.TotalGrossValue * (sale.Discounts / 100));
+        sale.Cancelled = false;
+
+        await _context.Sale.AddAsync(sale, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
-        return Sale;
+        return sale;
     }
+
+   
 
     /// <summary>
     /// Retrieves a Sale by their unique identifier
@@ -95,4 +116,43 @@ public class SaleRepository : ISaleRepository
 
         return true;
     }
+
+
+    public async Task<ICollection<SaleItems>> AgrupamentoItens(ICollection<SaleItems> saleItems, CancellationToken cancellationToken = default)
+    {
+        var agrupoSaleItems = saleItems.GroupBy(c => c.CodeProduct)
+                                      .Select(g => new SaleItems
+                                      {                                          
+                                          CodeProduct = g.Key,
+                                          //SaleId = g.First().SaleId,
+                                          UnitPrices = g.First().UnitPrices,
+                                          Quantities = g.Sum(c => c.Quantities)
+                                      })
+                                      .OrderByDescending(c => c.UnitPrices).ToList();
+
+        return agrupoSaleItems;
+    }
+
+    public async Task<decimal> Desconto(ICollection<SaleItems> saleItems, CancellationToken cancellationToken = default)
+    {
+        var saleItemsAgrupados = await AgrupamentoItens(saleItems, cancellationToken);
+
+        if (saleItemsAgrupados.Max(c => c.Quantities) < 4)        
+            return 0; 
+
+        return (saleItemsAgrupados.Any(c =>  c.Quantities >= 10)) ? 20 : 10;        
+    }
+
+
+    public async Task<bool> QuantidadeInvalida(ICollection<SaleItems> saleItems, CancellationToken cancellationToken = default)
+    {
+        var saleItemsAgrupados = await AgrupamentoItens(saleItems, cancellationToken);
+
+        if (saleItemsAgrupados.Max(c => c.Quantities) > 20)
+            return true;
+
+        return false;
+    }
+
+   
 }

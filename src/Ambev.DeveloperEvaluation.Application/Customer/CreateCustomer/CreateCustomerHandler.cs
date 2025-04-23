@@ -35,23 +35,13 @@ public class CreateCustomerHandler : IRequestHandler<CreateCustomerCommand, Crea
     /// <returns>The created Customer details</returns>
     public async Task<CreateCustomerResult> Handle(CreateCustomerCommand command, CancellationToken cancellationToken)
     {
-        var validator = new CreateCustomerCommandValidator();
+        var validator = new CreateCustomerCommandValidator(_customerRepository);
         var validationResult = await validator.ValidateAsync(command, cancellationToken);
 
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var existingEmailCustomer = await _customerRepository.GetByEmailAsync(command.Email, cancellationToken);
-        if (existingEmailCustomer != null)
-            throw new InvalidOperationException($"Customer with email=> '{command.Email}' already exists");
-
-        var existingNameCustomer = await _customerRepository.GetByNameAsync(command.Name, cancellationToken);
-        if (existingNameCustomer != null)
-            throw new InvalidOperationException($"Customer with name=>'{command.Name}' already exists");
-
-
-        var customer = _mapper.Map<Customer>(command);        
-
+        var customer = _mapper.Map<Customer>(command); 
         var createdCustomer = await _customerRepository.CreateAsync(customer, cancellationToken);
         var result = _mapper.Map<CreateCustomerResult>(createdCustomer);
         return result;

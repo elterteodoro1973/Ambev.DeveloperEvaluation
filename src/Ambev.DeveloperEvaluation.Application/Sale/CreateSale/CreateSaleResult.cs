@@ -31,7 +31,7 @@ public class CreateSaleResult
     
     public virtual Customer Customer { get; set; }
     
-    public virtual ICollection<SaleItems> SaleItems { get; set; } = new List<SaleItems>();
+    public virtual ICollection<CreateSaleItemsResult> SaleItems { get; set; } = new List<CreateSaleItemsResult>();
 
 
 }

@@ -36,20 +36,11 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Create
     /// <returns>The created Product details</returns>
     public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
-        var validator = new CreateProductCommandValidator();
+        var validator = new CreateProductCommandValidator(_productRepository);
         var validationResult = await validator.ValidateAsync(command, cancellationToken);
 
         if (!validationResult.IsValid)
-            throw new ValidationException(validationResult.Errors);
-
-
-        var existingCodeProduct = await _productRepository.GetByCodeAsync(command.Code, cancellationToken);
-        if (existingCodeProduct != null)
-            throw new InvalidOperationException($"Product with Code=> '{command.Code}' already exists");
-
-        var existingDescriptionProduct = await _productRepository.GetByDescriptionAsync(command.Description, cancellationToken);
-        if (existingDescriptionProduct != null)
-            throw new InvalidOperationException($"Product with Description=> '{command.Description}' already exists");
+            throw new ValidationException(validationResult.Errors);      
 
 
         var product = _mapper.Map<Product>(command);

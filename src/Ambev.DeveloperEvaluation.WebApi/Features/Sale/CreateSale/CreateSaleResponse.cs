@@ -41,4 +41,6 @@ public class CreateSaleResponse
 
     public bool? Cancelled { get; set; } = false;
 
+    public ICollection<CreateSaleItemsResponse> SaleItems { get; set; } = new List<CreateSaleItemsResponse>();
+
 }
