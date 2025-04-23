@@ -39,4 +39,33 @@ public interface ISaleRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>True if the Sale was deleted, false if not found</returns>
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+
+
+    /// <summary>
+    /// Group a Sale Items from the repository
+    /// </summary>
+    /// <param name="saleItems">Group by CodeProduct</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>True if the Sale was deleted, false if not found</returns>
+    Task<ICollection<SaleItems>> AgrupamentoItens(ICollection<SaleItems> saleItems, CancellationToken cancellationToken = default);
+
+
+    /// <summary>
+    /// Group a Sale Items from the repository
+    /// </summary>
+    /// <param name="saleItems">Group by CodeProduct</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>True if the Sale was deleted, false if not found</returns>
+    Task<decimal> Desconto(ICollection<SaleItems> saleItems, CancellationToken cancellationToken = default);
+
+
+
+    /// <summary>
+    /// Group a Sale Items from the repository
+    /// </summary>
+    /// <param name="saleItems">Group by CodeProduct</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>True if the Sale was deleted, false if not found</returns>
+    Task<bool> QuantidadeInvalida(ICollection<SaleItems> saleItems, CancellationToken cancellationToken = default);
+
 }

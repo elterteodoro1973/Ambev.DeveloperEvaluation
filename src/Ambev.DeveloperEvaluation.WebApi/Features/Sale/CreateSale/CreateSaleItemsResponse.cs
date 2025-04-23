@@ -1,6 +1,6 @@
 ﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 
-public class  CreateSaleItemsRequest
+public class CreateSaleItemsResponse
 {
     /// <summary>
     /// The unique SaleItems of the Sale

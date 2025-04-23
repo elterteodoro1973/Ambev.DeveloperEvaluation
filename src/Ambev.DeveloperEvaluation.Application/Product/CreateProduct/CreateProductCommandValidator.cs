@@ -2,6 +2,10 @@
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Validation;
 using FluentValidation;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.Threading;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.ORM.Repositories;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 
@@ -10,6 +14,9 @@ namespace Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 /// </summary>
 public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
 {
+
+    private readonly IProductRepository _productRepository;
+
     /// <summary>
     /// Initializes a new instance of the CreateProductCommandValidator with defined validation rules.
     /// </summary>
@@ -22,10 +29,52 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
     /// - Status: Cannot be set to Unknown
     /// - Role: Cannot be set to None
     /// </remarks>
+    public CreateProductCommandValidator(IProductRepository productRepository)
+    {
+        ValidorGeral();
+
+        _productRepository = productRepository;
+
+        RuleFor(Product => Product.Code)
+            .Must(code => !ExistingCodeProduct(code))
+            .WithMessage(code => $"Product with Code => '{code}' already exists");
+
+        RuleFor(Product => Product.Description)
+            .Must(description => !ExistingDescriptionProduct(description))
+            .WithMessage(description => $"Product with Description '{description}' already exists");        
+    }
+
+
     public CreateProductCommandValidator()
     {
-        RuleFor(Product => Product.Description).NotEmpty().Length(3, 50);        ;
+        ValidorGeral();
+    }
+
+    private void ValidorGeral()
+    {
+        RuleFor(Product => Product.Description).NotEmpty().Length(3, 50); ;
         RuleFor(Product => Product.Price).NotEmpty();
         RuleFor(Product => Product.QuantityInStock).NotEmpty();
     }
+
+    /// <summary>
+    /// Checks if a Product with the given Code already exists.
+    /// </summary>
+    private bool ExistingCodeProduct(string code)
+    {
+        var cancellationToken = CancellationToken.None;
+        var existingCodeProduct =  _productRepository.GetByCodeAsync(code, cancellationToken).Result;
+        return existingCodeProduct != null;
+    }
+
+    /// <summary>
+    /// Checks if a Product with the given Description already exists.
+    /// </summary>
+    private bool ExistingDescriptionProduct(string description)
+    {
+        var cancellationToken = CancellationToken.None;
+        var existingDescriptionProduct = _productRepository.GetByDescriptionAsync(description, cancellationToken).Result;
+        return existingDescriptionProduct != null;
+    }
+
 }

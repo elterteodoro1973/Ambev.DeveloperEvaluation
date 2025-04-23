@@ -15,9 +15,31 @@ public class CreateSaleProfile : Profile
     {
         CreateMap<CreateSaleCommand, Sale>()
                 .ForMember(c => c.Id, m => m.MapFrom(c => Guid.NewGuid()))
-                .ForMember(c => c.CustomerId, m => m.MapFrom(c => c.CustomerId));
-        CreateMap<Sale, CreateSaleResult>();
+                .ForMember(c => c.CustomerId, m => m.MapFrom(c => c.CustomerId))
+                .ForMember(c => c.SaleItems, m => m.MapFrom(c => c.SaleItems.Select(c => new SaleItems
+                {                    
+                    CodeProduct = c.CodeProduct,
+                    Quantities = c.Quantities,
+                    UnitPrices = c.UnitPrices,
+                }).ToList())) ;
+
+        CreateMap<CreateSaleCommand, CreateSaleResult>()
+             .ForMember(c => c.SaleItems, m => m.MapFrom(c => c.SaleItems.Select(c => new CreateSaleItemsResult
+             {
+                 CodeProduct = c.CodeProduct,
+                 Quantities = c.Quantities,
+                 UnitPrices = c.UnitPrices,
+             }).ToList()));
+
+
+        CreateMap<Sale, CreateSaleResult>()
+             .ForMember(c => c.SaleItems, m => m.MapFrom(c => c.SaleItems.Select(c => new CreateSaleItemsResult
+             {
+                 CodeProduct = c.CodeProduct,
+                 Quantities = c.Quantities,
+                 UnitPrices = c.UnitPrices,
+             }).ToList()));
     }
 
-    
+
 }
